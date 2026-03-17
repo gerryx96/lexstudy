@@ -1226,9 +1226,11 @@ function showHeart() {
   setTimeout(() => el.remove(), 1100);
 }
 
+const PROXY = "https://lexstudy-proxy.gerryx96.workers.dev";
+
 async function claude(prompt, maxTok = 1000) {
   const apiKey = localStorage.getItem('lex_apikey');
-  const r = await fetch("https://api.anthropic.com/v1/messages", {
+  const r = await fetch(PROXY, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -1266,7 +1268,7 @@ async function submitKey() {
 
   try {
     // quick validation call
-    const r = await fetch("https://api.anthropic.com/v1/messages", {
+    const r = await fetch(PROXY, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
