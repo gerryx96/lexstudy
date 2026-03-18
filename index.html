@@ -537,6 +537,208 @@ body {
   .cs-val { font-size: 1.3rem; }
 }
 
+/* ── LOGIN SCREEN ── */
+.login-screen {
+  display: none;
+  position: fixed; inset: 0; z-index: 9998;
+  background: var(--bg);
+  align-items: center; justify-content: center;
+  padding: 24px;
+}
+.login-screen.show { display: flex; }
+
+.login-card {
+  width: 100%; max-width: 420px;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 20px;
+  padding: 36px 28px;
+}
+
+.login-logo {
+  font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800;
+  background: linear-gradient(135deg, #38bdf8, #a78bfa);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  margin-bottom: 6px; text-align: center;
+}
+
+.login-tabs {
+  display: flex; gap: 0;
+  background: var(--bg); border-radius: 10px;
+  padding: 4px; margin-bottom: 24px;
+}
+
+.login-tab {
+  flex: 1; padding: 8px;
+  border-radius: 8px; border: none;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.85rem; font-weight: 800;
+  cursor: pointer; color: var(--text-3);
+  background: transparent; transition: all 0.18s;
+}
+.login-tab.active { background: var(--surface); color: var(--text); }
+
+.login-field { margin-bottom: 14px; }
+.login-label {
+  display: block; font-size: 0.72rem; font-weight: 800;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--text-3); margin-bottom: 6px;
+}
+.login-input {
+  width: 100%; padding: 12px 14px;
+  background: var(--bg); border: 1.5px solid var(--border2);
+  border-radius: var(--radius-sm); color: var(--text);
+  font-family: 'Nunito', sans-serif; font-size: 0.9rem; font-weight: 600;
+  outline: none; transition: border-color 0.18s;
+}
+.login-input:focus { border-color: var(--blue); }
+.login-input::placeholder { color: var(--text-3); }
+
+.login-error {
+  font-size: 0.8rem; color: var(--red); font-weight: 700;
+  display: none; margin-bottom: 12px; text-align: center;
+}
+.login-error.show { display: block; }
+
+.login-btn {
+  width: 100%; padding: 13px;
+  background: var(--blue-d); color: white; border: none;
+  border-radius: var(--radius-sm); font-family: 'Nunito', sans-serif;
+  font-size: 0.92rem; font-weight: 900; cursor: pointer;
+  text-transform: uppercase; letter-spacing: 0.04em;
+  transition: background 0.18s; margin-top: 4px;
+}
+.login-btn:hover { background: #0369a1; }
+.login-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.login-note {
+  font-size: 0.72rem; color: var(--text-3); text-align: center;
+  margin-top: 14px; line-height: 1.6;
+}
+.login-note a { color: var(--blue); text-decoration: none; }
+
+/* ── HISTORY SCREEN ── */
+.history-scroll {
+  max-width: 480px; margin: 0 auto;
+  padding: 20px 16px 120px;
+}
+
+.history-header { font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 800; margin-bottom: 6px; }
+.history-sub { font-size: 0.85rem; color: var(--text-2); margin-bottom: 20px; }
+
+.hist-card {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius);
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: border-color 0.14s, transform 0.12s;
+  overflow: hidden;
+}
+.hist-card:hover { border-color: var(--blue); transform: translateY(-1px); }
+.hist-card:active { transform: translateY(1px); }
+
+.hist-top {
+  padding: 14px 16px;
+  display: flex; align-items: center; gap: 12px;
+}
+.hist-icon {
+  width: 40px; height: 40px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; flex-shrink: 0;
+  background: rgba(56,189,248,0.1);
+}
+.hist-info { flex: 1; min-width: 0; }
+.hist-concept { font-weight: 800; font-size: 0.88rem; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hist-meta { font-size: 0.75rem; color: var(--text-3); margin-top: 2px; }
+.hist-badge {
+  font-size: 0.7rem; font-weight: 800; padding: 3px 10px;
+  border-radius: 10px; white-space: nowrap; flex-shrink: 0;
+}
+.hist-badge.ok { background: rgba(74,222,128,0.1); color: var(--green); border: 1px solid rgba(74,222,128,0.2); }
+.hist-badge.partial { background: rgba(251,191,36,0.1); color: var(--yellow); border: 1px solid rgba(251,191,36,0.2); }
+
+/* Review modal */
+.review-modal {
+  display: none;
+  position: fixed; inset: 0; z-index: 400;
+  background: rgba(0,0,0,0.7);
+  align-items: flex-end; justify-content: center;
+  padding: 0;
+}
+.review-modal.show { display: flex; }
+
+.review-sheet {
+  background: var(--bg);
+  border-radius: 20px 20px 0 0;
+  width: 100%; max-width: 540px;
+  max-height: 88vh;
+  overflow-y: auto;
+  padding: 20px 20px 40px;
+  animation: slideSheet 0.28s ease;
+}
+@keyframes slideSheet {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+.review-handle {
+  width: 40px; height: 4px; border-radius: 2px;
+  background: var(--border2); margin: 0 auto 16px;
+}
+
+.review-title { font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 800; color: var(--text); margin-bottom: 4px; }
+.review-sub { font-size: 0.8rem; color: var(--text-3); margin-bottom: 20px; }
+
+.review-step {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  margin-bottom: 12px;
+}
+
+.review-step-label {
+  font-size: 0.68rem; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 0.1em; color: var(--text-3); margin-bottom: 8px;
+}
+
+.review-step-title { font-weight: 800; font-size: 0.92rem; color: var(--text); margin-bottom: 8px; }
+.review-step-body { font-size: 0.85rem; line-height: 1.7; color: var(--text-2); white-space: pre-wrap; }
+
+.review-q { font-weight: 800; font-size: 0.9rem; color: var(--text); margin-bottom: 10px; }
+
+.review-opt {
+  padding: 10px 14px; border-radius: 8px;
+  font-size: 0.85rem; font-weight: 700;
+  margin-bottom: 6px; display: flex; align-items: center; gap: 10px;
+}
+.review-opt.correct { background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.3); color: var(--green); }
+.review-opt.wrong   { background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.3); color: var(--red); }
+.review-opt.neutral { background: var(--bg); border: 1px solid var(--border); color: var(--text-3); }
+
+.review-exp {
+  margin-top: 10px; padding-top: 10px;
+  border-top: 1px solid var(--border);
+  font-size: 0.82rem; line-height: 1.6; color: var(--text-2);
+}
+
+/* profile chip in topbar */
+.profile-chip {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--surface); border: 1px solid var(--border2);
+  border-radius: 20px; padding: 4px 10px 4px 6px;
+  cursor: pointer; transition: border-color 0.14s;
+}
+.profile-chip:hover { border-color: var(--blue); }
+.profile-avatar {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--blue), var(--purple));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.7rem; font-weight: 900; color: white;
+}
+.profile-name { font-size: 0.75rem; font-weight: 800; color: var(--text-2); }
+
 /* ── API KEY SCREEN ── */
 .apikey-screen {
   display: none;
@@ -619,6 +821,64 @@ body {
 </head>
 <body>
 
+<!-- LOGIN SCREEN -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo">LexStudy</div>
+    <p style="text-align:center;font-size:0.82rem;color:var(--text-3);margin-bottom:20px">Esame di Stato — Commercialista</p>
+
+    <div class="login-tabs">
+      <button class="login-tab active" id="tabLogin" onclick="switchLoginTab('login')">Accedi</button>
+      <button class="login-tab" id="tabRegister" onclick="switchLoginTab('register')">Registrati</button>
+    </div>
+
+    <div id="loginForm">
+      <div class="login-field">
+        <label class="login-label">Username</label>
+        <input class="login-input" id="loginUser" type="text" placeholder="il tuo username" autocomplete="username">
+      </div>
+      <div class="login-field">
+        <label class="login-label">Password</label>
+        <input class="login-input" id="loginPass" type="password" placeholder="••••••••" autocomplete="current-password"
+          onkeydown="if(event.key==='Enter') doLogin()">
+      </div>
+      <div class="login-error" id="loginError">⚠ Username o password errati</div>
+      <button class="login-btn" onclick="doLogin()" id="loginBtn">Accedi →</button>
+    </div>
+
+    <div id="registerForm" style="display:none">
+      <div class="login-field">
+        <label class="login-label">Username</label>
+        <input class="login-input" id="regUser" type="text" placeholder="scegli un username">
+      </div>
+      <div class="login-field">
+        <label class="login-label">Password</label>
+        <input class="login-input" id="regPass" type="password" placeholder="almeno 6 caratteri">
+      </div>
+      <div class="login-field">
+        <label class="login-label">Anthropic API Key</label>
+        <input class="login-input" id="regKey" type="password" placeholder="sk-ant-api03-…">
+      </div>
+      <div class="login-error" id="registerError"></div>
+      <button class="login-btn" onclick="doRegister()" id="registerBtn">Crea account →</button>
+      <div class="login-note">
+        Ottieni la tua API key su <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a><br>
+        ~€0.003 per lezione
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- REVIEW MODAL -->
+<div class="review-modal" id="reviewModal" onclick="closeReview(event)">
+  <div class="review-sheet" id="reviewSheet">
+    <div class="review-handle"></div>
+    <div class="review-title" id="reviewTitle">—</div>
+    <div class="review-sub" id="reviewSub">—</div>
+    <div id="reviewContent"></div>
+  </div>
+</div>
+
 <!-- API KEY SCREEN -->
 <div class="apikey-screen" id="apikeyScreen">
   <div class="apikey-card">
@@ -648,7 +908,10 @@ body {
     <div class="stat-badge fire">🔥 <span id="tStreak">0</span></div>
     <div class="stat-badge star">⭐ <span id="tXP">0</span></div>
     <div class="stat-badge heart">❤️ <span id="tHearts">5</span></div>
-    <button class="apikey-change-btn" onclick="changeKey()" title="Cambia API Key">🔑</button>
+    <div class="profile-chip" onclick="showProfileMenu()" id="profileChip">
+      <div class="profile-avatar" id="profileAvatar">G</div>
+      <span class="profile-name" id="profileName">—</span>
+    </div>
   </div>
 </div>
 
@@ -808,10 +1071,22 @@ body {
   </div>
 </div>
 
+<!-- ═══ HISTORY ═══ -->
+<div class="screen" id="s-history">
+  <div class="history-scroll">
+    <div class="history-header">Storico lezioni</div>
+    <div class="history-sub">Clicca su una lezione per rivedere domande e risposte.</div>
+    <div id="historyList"></div>
+  </div>
+</div>
+
 <!-- BOTTOM NAV -->
 <div class="bottom-nav" id="bottomNav">
   <button class="bnav-item active" onclick="goScreen('home')" id="bn-home">
     <span class="bicon">🏠</span>Home
+  </button>
+  <button class="bnav-item" onclick="goScreen('history')" id="bn-history">
+    <span class="bicon">📚</span>Storico
   </button>
   <button class="bnav-item" onclick="goScreen('progress')" id="bn-progress">
     <span class="bicon">📈</span>Progressi
@@ -823,10 +1098,45 @@ body {
 
 <script>
 // ══ STATE ═════════════════════════════════════════════
-const KEY = 'lexstudy_v3';
-let S = load();
+const USERS_KEY = 'lexstudy_users';
+let S = {};
+let currentUser = null;
 
-// Materie → prova mapping (used for XP allocation)
+// ── Supabase config ───────────────────────────────────
+const SB_URL = 'https://xuzflkdbardbywcasdrj.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh1emZsa2RiYXJkYnl3Y2FzZHJqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4MzczMDcsImV4cCI6MjA4OTQxMzMwN30.8tXJCea1YJjOaJST9fjrxjgNGFnkzppuCdUZsIjR6IA';
+
+async function sbFetch(path, method = 'GET', body = null) {
+  const opts = {
+    method,
+    headers: {
+      'apikey': SB_KEY,
+      'Authorization': 'Bearer ' + SB_KEY,
+      'Content-Type': 'application/json',
+      'Prefer': method === 'POST' ? 'resolution=merge-duplicates,return=representation' : ''
+    }
+  };
+  if (body) opts.body = JSON.stringify(body);
+  const r = await fetch(SB_URL + '/rest/v1/' + path, opts);
+  if (!r.ok) { const e = await r.text(); throw new Error(e); }
+  const txt = await r.text();
+  return txt ? JSON.parse(txt) : null;
+}
+
+async function sbGetUser(username) {
+  const rows = await sbFetch(`user_data?username=eq.${encodeURIComponent(username)}&select=*`);
+  return rows?.[0] || null;
+}
+
+async function sbSaveUser(username, passHash, apiKey, data) {
+  return sbFetch('user_data', 'POST', { username, pass_hash: passHash, api_key: apiKey, data, updated_at: new Date().toISOString() });
+}
+
+async function sbUpdateData(username, data) {
+  return sbFetch(`user_data?username=eq.${encodeURIComponent(username)}`, 'PATCH', { data, updated_at: new Date().toISOString() });
+}
+
+// ── Materie → prova mapping ───────────────────────────
 const MATERIE_PROVA = {
   ragioneria:'p1', revisione:'p1', tecnica:'p1', finanza:'p1',
   privato:'p2', commerciale:'p2', fallimentare:'p2', tributario:'p2', lavoro:'p2',
@@ -834,8 +1144,6 @@ const MATERIE_PROVA = {
   econpol:'po', deonto:'po', matstat:'po'
 };
 
-// Rotating daily curriculum: each entry = {concept, materia, materiaId, provaId, prova}
-// These are the "official" topics based on real exam traces
 const CURRICULUM = [
   {concept:"Principio di competenza economica", materia:"Ragioneria Generale", materiaId:"ragioneria", provaId:"p1", prova:"I Prova"},
   {concept:"Società a responsabilità limitata (S.r.l.)", materia:"Diritto Commerciale", materiaId:"commerciale", provaId:"p2", prova:"II Prova"},
@@ -861,21 +1169,163 @@ const CURRICULUM = [
 
 const PROVA_COLORS = { p1:'p1', p2:'p2', p3:'p3', po:'po' };
 
-// ══ PERSISTENCE ══════════════════════════════════════
-function load() {
-  try { const r = localStorage.getItem(KEY); if(r) return JSON.parse(r); } catch(e){}
-  return {
-    xp: 0, streak: 0, hearts: 5,
-    lastDoneDate: null,
-    completedDates: [],
-    completedConcepts: [],  // [{materiaId, date}]
-    dailyConcept: null, dailyDate: null,
-    materiaXP: {}  // {materiaId: xp_count}
-  };
+// ── Helpers ───────────────────────────────────────────
+function hashPass(pass) {
+  let h = 0;
+  for (let i = 0; i < pass.length; i++) { h = ((h << 5) - h) + pass.charCodeAt(i); h |= 0; }
+  return h.toString(36);
 }
-function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e){} }
+
+function emptyUserData() {
+  return { xp:0, streak:0, hearts:5, lastDoneDate:null, completedDates:[], completedConcepts:[], dailyConcept:null, dailyDate:null, materiaXP:{}, lessonHistory:[] };
+}
+
+// ── Local cache (fallback offline) ───────────────────
+function loadLocalUser(username) {
+  try { const r = localStorage.getItem('lex_user_' + username); return r ? JSON.parse(r) : null; } catch(e){ return null; }
+}
+function saveLocalUser(username, userData) {
+  try { localStorage.setItem('lex_user_' + username, JSON.stringify(userData)); } catch(e){}
+}
+
+// ══ LOGIN / REGISTER ══════════════════════════════════
+function switchLoginTab(tab) {
+  document.getElementById('tabLogin').classList.toggle('active', tab === 'login');
+  document.getElementById('tabRegister').classList.toggle('active', tab === 'register');
+  document.getElementById('loginForm').style.display = tab === 'login' ? '' : 'none';
+  document.getElementById('registerForm').style.display = tab === 'register' ? '' : 'none';
+  document.getElementById('loginError').classList.remove('show');
+  document.getElementById('registerError').classList.remove('show');
+}
+
+async function doLogin() {
+  const username = document.getElementById('loginUser').value.trim().toLowerCase();
+  const password = document.getElementById('loginPass').value;
+  const errEl = document.getElementById('loginError');
+  const btn = document.getElementById('loginBtn');
+  errEl.classList.remove('show');
+  if (!username || !password) { errEl.textContent = '⚠ Inserisci username e password'; errEl.classList.add('show'); return; }
+
+  btn.textContent = 'Accesso…'; btn.disabled = true;
+  try {
+    let user = await sbGetUser(username);
+    if (!user) {
+      // prova cache locale (offline)
+      const local = loadLocalUser(username);
+      if (local && local.passHash === hashPass(password)) {
+        user = local;
+      } else {
+        errEl.textContent = '⚠ Username non trovato'; errEl.classList.add('show');
+        btn.textContent = 'Accedi →'; btn.disabled = false; return;
+      }
+    }
+    if (user.pass_hash !== hashPass(password)) {
+      errEl.textContent = '⚠ Password errata'; errEl.classList.add('show');
+      btn.textContent = 'Accedi →'; btn.disabled = false; return;
+    }
+    saveLocalUser(username, user);
+    loginSuccess(username, user);
+  } catch(e) {
+    // fallback offline
+    const local = loadLocalUser(username);
+    if (local && local.passHash === hashPass(password)) {
+      loginSuccess(username, local);
+    } else {
+      errEl.textContent = '⚠ Errore di rete. Controlla la connessione.'; errEl.classList.add('show');
+    }
+  }
+  btn.textContent = 'Accedi →'; btn.disabled = false;
+}
+
+async function doRegister() {
+  const username = document.getElementById('regUser').value.trim().toLowerCase();
+  const password = document.getElementById('regPass').value;
+  const apiKey   = document.getElementById('regKey').value.trim();
+  const errEl    = document.getElementById('registerError');
+  const btn      = document.getElementById('registerBtn');
+  errEl.classList.remove('show');
+
+  if (!username || username.length < 3) { errEl.textContent = '⚠ Username minimo 3 caratteri'; errEl.classList.add('show'); return; }
+  if (!password || password.length < 6) { errEl.textContent = '⚠ Password minimo 6 caratteri'; errEl.classList.add('show'); return; }
+  if (!apiKey.startsWith('sk-ant-'))    { errEl.textContent = '⚠ API key non valida'; errEl.classList.add('show'); return; }
+
+  btn.textContent = 'Verifica…'; btn.disabled = true;
+
+  // verifica API key
+  try {
+    const r = await fetch(PROXY, {
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01'},
+      body: JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:10,messages:[{role:'user',content:'ok'}]})
+    });
+    if (!r.ok) throw new Error('invalid key');
+  } catch(e) {
+    errEl.textContent = '⚠ API key non valida o errore di rete'; errEl.classList.add('show');
+    btn.textContent = 'Crea account →'; btn.disabled = false; return;
+  }
+
+  btn.textContent = 'Creazione account…';
+  const passHash = hashPass(password);
+  const data = emptyUserData();
+
+  try {
+    const existing = await sbGetUser(username);
+    if (existing) { errEl.textContent = '⚠ Username già in uso'; errEl.classList.add('show'); btn.textContent = 'Crea account →'; btn.disabled = false; return; }
+    await sbSaveUser(username, passHash, apiKey, data);
+    const user = { username, pass_hash: passHash, api_key: apiKey, data };
+    saveLocalUser(username, user);
+    loginSuccess(username, user);
+  } catch(e) {
+    errEl.textContent = '⚠ Errore salvataggio: ' + e.message; errEl.classList.add('show');
+  }
+  btn.textContent = 'Crea account →'; btn.disabled = false;
+}
+
+function loginSuccess(username, user) {
+  currentUser = username;
+  S = user.data || emptyUserData();
+  localStorage.setItem('lex_current_user', username);
+  document.getElementById('loginScreen').classList.remove('show');
+  document.getElementById('apikeyScreen').classList.remove('show');
+  document.getElementById('profileAvatar').textContent = username[0].toUpperCase();
+  document.getElementById('profileName').textContent = username;
+  checkStreak();
+  pickDailyConcept();
+  renderHome();
+  renderProgress();
+  renderHistory();
+}
+
+async function save() {
+  if (!currentUser) return;
+  // salva locale subito
+  const local = loadLocalUser(currentUser);
+  if (local) { local.data = S; saveLocalUser(currentUser, local); }
+  // sync su Supabase in background
+  try { await sbUpdateData(currentUser, S); } catch(e) { console.warn('Sync offline, dati salvati localmente'); }
+}
+
+function getApiKey() {
+  const local = loadLocalUser(currentUser);
+  return local?.api_key || '';
+}
+
+function showProfileMenu() {
+  if (confirm(`Sei loggato come "${currentUser}"\n\nVuoi uscire?`)) logout();
+}
+
+function logout() {
+  currentUser = null; S = {};
+  localStorage.removeItem('lex_current_user');
+  document.getElementById('loginScreen').classList.add('show');
+  document.getElementById('loginUser').value = '';
+  document.getElementById('loginPass').value = '';
+  document.getElementById('loginError').classList.remove('show');
+}
+
+// ══ PERSISTENCE ══════════════════════════════════════
 function today() { return new Date().toISOString().slice(0,10); }
-function isDoneToday() { return S.completedDates.includes(today()); }
+function isDoneToday() { return S.completedDates?.includes(today()); }
 
 // ══ LESSON STATE ══════════════════════════════════════
 let L = {};
@@ -1158,6 +1608,22 @@ function renderComplete() {
   // increment materia XP
   const mid = S.dailyConcept?.materiaId;
   if (mid) S.materiaXP[mid] = (S.materiaXP[mid] || 0) + 1;
+
+  // ── save lesson to history ──
+  if (!S.lessonHistory) S.lessonHistory = [];
+  S.lessonHistory.unshift({
+    date: today(),
+    concept: L.data?.concept || '',
+    materia: L.data?.materia || '',
+    provaId: S.dailyConcept?.provaId || 'p1',
+    steps: L.steps,
+    answers: L.answers || [],
+    xp: totalXP,
+    accuracy: acc
+  });
+  // keep max 60 lezioni in storia
+  if (S.lessonHistory.length > 60) S.lessonHistory = S.lessonHistory.slice(0, 60);
+
   save();
 
   document.getElementById('stepWrap').innerHTML = `
@@ -1174,9 +1640,111 @@ function renderComplete() {
 
   setBtn('green','🏠 Torna alla home');
   document.getElementById('floatBtn').onclick = () => {
-    goScreen('home'); renderHome(); renderProgress();
+    goScreen('home'); renderHome(); renderProgress(); renderHistory();
   };
 }
+
+// also track answers per quiz step
+const _origCheckAnswer = checkAnswer;
+function checkAnswer() {
+  if (!L.answers) L.answers = [];
+  _origCheckAnswer();
+  // record answer after check
+  const s = L.steps?.[L.cur];
+  if (s?.type === 'quiz') {
+    L.answers.push({ stepIdx: L.cur, chosen: L.sel, correct: s.correct });
+  }
+}
+
+// ══ HISTORY ═══════════════════════════════════════════
+function renderHistory() {
+  const list = document.getElementById('historyList');
+  if (!list) return;
+  const history = S.lessonHistory || [];
+
+  if (history.length === 0) {
+    list.innerHTML = `<div style="text-align:center;padding:48px 20px;color:var(--text-3)">
+      <div style="font-size:2.5rem;margin-bottom:12px">📭</div>
+      <div style="font-size:0.9rem;font-weight:700">Nessuna lezione completata ancora.<br>Inizia la prima lezione!</div>
+    </div>`;
+    return;
+  }
+
+  const PROVA_ICONS = { p1:'📊', p2:'⚖️', p3:'✏️', po:'🎤' };
+  const dateLabels = {};
+  
+  list.innerHTML = history.map((h, i) => {
+    let dateHeader = '';
+    const label = h.date === today() ? 'Oggi' :
+      h.date === new Date(Date.now()-86400000).toISOString().slice(0,10) ? 'Ieri' :
+      new Date(h.date).toLocaleDateString('it-IT', {day:'numeric', month:'long'});
+    
+    if (!dateLabels[h.date]) {
+      dateLabels[h.date] = true;
+      dateHeader = `<div class="section-label" style="margin-top:${i===0?'0':'16px'}">${label}</div>`;
+    }
+
+    const badgeCls = h.accuracy >= 80 ? 'ok' : 'partial';
+    const badgeTxt = h.accuracy >= 80 ? `✓ ${h.accuracy}%` : `${h.accuracy}%`;
+
+    return `${dateHeader}
+    <div class="hist-card" onclick="openReview(${i})">
+      <div class="hist-top">
+        <div class="hist-icon">${PROVA_ICONS[h.provaId] || '📖'}</div>
+        <div class="hist-info">
+          <div class="hist-concept">${h.concept}</div>
+          <div class="hist-meta">${h.materia} · +${h.xp} XP</div>
+        </div>
+        <span class="hist-badge ${badgeCls}">${badgeTxt}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openReview(idx) {
+  const h = (S.lessonHistory || [])[idx];
+  if (!h) return;
+
+  document.getElementById('reviewTitle').textContent = h.concept;
+  document.getElementById('reviewSub').textContent = `${h.materia} · ${h.date === today() ? 'Oggi' : new Date(h.date).toLocaleDateString('it-IT', {day:'numeric',month:'long',year:'numeric'})} · ${h.accuracy}% corretto`;
+
+  const letters = ['A','B','C','D'];
+  const content = h.steps.map((s, si) => {
+    if (s.type === 'intro' || s.type === 'esempio') {
+      return `<div class="review-step">
+        <div class="review-step-label">${s.type === 'intro' ? '📖 Concetto' : '💡 Esempio'}</div>
+        <div class="review-step-title">${s.title}</div>
+        ${s.highlight ? `<div style="background:rgba(56,189,248,0.07);border:1px solid rgba(56,189,248,0.2);border-radius:8px;padding:10px 12px;margin-bottom:10px;font-size:0.82rem;color:var(--text-2)">${s.highlight}</div>` : ''}
+        <div class="review-step-body">${s.body}</div>
+      </div>`;
+    } else {
+      const ans = (h.answers || []).find(a => a.stepIdx === si);
+      const opts = (s.options || []).map((o, oi) => {
+        let cls = 'neutral';
+        if (oi === s.correct) cls = 'correct';
+        else if (ans && oi === ans.chosen && oi !== s.correct) cls = 'wrong';
+        const marker = oi === s.correct ? '✓' : (ans && oi === ans.chosen ? '✗' : letters[oi]);
+        return `<div class="review-opt ${cls}"><strong>${marker}</strong> ${o.replace(/^[A-D]\)\s*/,'')}</div>`;
+      }).join('');
+      return `<div class="review-step">
+        <div class="review-step-label">❓ Quiz</div>
+        <div class="review-q">${s.question}</div>
+        ${opts}
+        <div class="review-exp">${s.explanation}</div>
+      </div>`;
+    }
+  }).join('');
+
+  document.getElementById('reviewContent').innerHTML = content;
+  document.getElementById('reviewModal').classList.add('show');
+}
+
+function closeReview(e) {
+  if (e.target === document.getElementById('reviewModal')) {
+    document.getElementById('reviewModal').classList.remove('show');
+  }
+}
+
 
 function handleBtn() {
   const s = L.steps?.[L.cur];
@@ -1226,10 +1794,8 @@ function showHeart() {
   setTimeout(() => el.remove(), 1100);
 }
 
-const PROXY = "https://lexstudy-proxy.gerryx96.workers.dev";
-
 async function claude(prompt, maxTok = 1000) {
-  const apiKey = localStorage.getItem('lex_apikey');
+  const apiKey = getApiKey();
   const r = await fetch(PROXY, {
     method: "POST",
     headers: {
@@ -1294,20 +1860,43 @@ async function submitKey() {
   btn.disabled = false;
 }
 
-function changeKey() {
-  localStorage.removeItem('lex_apikey');
-  document.getElementById('apikeyInput').value = '';
-  document.getElementById('apikeyError').classList.remove('show');
-  document.getElementById('apikeyScreen').classList.add('show');
-}
+// ── API KEY FLOW (legacy — non usata) ────────────────
+function submitKey() {}
+function changeKey() {}
 
 // ══ BOOTSTRAP ════════════════════════════════════════
+const PROXY = "https://lexstudy-proxy.gerryx96.workers.dev";
+
 document.getElementById('floatBtnWrap').style.display = 'none';
-if (!localStorage.getItem('lex_apikey')) {
-  document.getElementById('apikeyScreen').classList.add('show');
-} else {
-  init();
-}
+
+(async () => {
+  const savedUser = localStorage.getItem('lex_current_user');
+  if (savedUser) {
+    // prova prima cache locale (istantaneo)
+    const local = loadLocalUser(savedUser);
+    if (local) {
+      loginSuccess(savedUser, local);
+      // poi aggiorna da Supabase in background
+      try {
+        const remote = await sbGetUser(savedUser);
+        if (remote) {
+          saveLocalUser(savedUser, remote);
+          S = remote.data || emptyUserData();
+          renderHome(); renderProgress(); renderHistory();
+        }
+      } catch(e) {}
+      return;
+    }
+    // nessuna cache locale, prova Supabase
+    try {
+      const remote = await sbGetUser(savedUser);
+      if (remote) { saveLocalUser(savedUser, remote); loginSuccess(savedUser, remote); return; }
+    } catch(e) {}
+  }
+  document.getElementById('loginScreen').classList.add('show');
+})();
+
+
 
 // ══ SERVICE WORKER ════════════════════════════════════
 if ('serviceWorker' in navigator) {
