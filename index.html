@@ -1564,8 +1564,13 @@ function pickOpt(idx) {
 function checkAnswer() {
   if (L.answered || L.sel === null) return;
   L.answered = true;
+  if (!L.answers) L.answers = [];
+
   const s = L.steps[L.cur];
   const ok = L.sel === s.correct;
+
+  // traccia risposta per storico
+  L.answers.push({ stepIdx: L.cur, chosen: L.sel, correct: s.correct });
 
   document.querySelectorAll('.opt').forEach((o,i) => {
     o.disabled = true;
@@ -1642,18 +1647,6 @@ function renderComplete() {
   document.getElementById('floatBtn').onclick = () => {
     goScreen('home'); renderHome(); renderProgress(); renderHistory();
   };
-}
-
-// also track answers per quiz step
-const _origCheckAnswer = checkAnswer;
-function checkAnswer() {
-  if (!L.answers) L.answers = [];
-  _origCheckAnswer();
-  // record answer after check
-  const s = L.steps?.[L.cur];
-  if (s?.type === 'quiz') {
-    L.answers.push({ stepIdx: L.cur, chosen: L.sel, correct: s.correct });
-  }
 }
 
 // ══ HISTORY ═══════════════════════════════════════════
