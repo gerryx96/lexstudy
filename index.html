@@ -710,7 +710,7 @@ async function doRegister() {
     const r = await fetch(PROXY, {
       method:'POST',
       headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01'},
-      body: JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:10,messages:[{role:'user',content:'ok'}]})
+      body: JSON.stringify({model:'claude-sonnet-5-5',max_tokens:10,messages:[{role:'user',content:'ok'}]})
     });
     if (!r.ok) throw new Error('invalid key');
   } catch(e) {
@@ -778,7 +778,11 @@ function logout() {
 }
 
 // ══ PERSISTENCE ══════════════════════════════════════
-function today() { return new Date().toISOString().slice(0,10); }
+// Usa fuso orario locale (non UTC) per evitare bug di mezzanotte
+function today() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
 function isDoneToday() { return S.completedDates?.includes(today()); }
 
 // ══ LESSON STATE ══════════════════════════════════════
@@ -790,13 +794,57 @@ async function init() {
   pickDailyConcept();
   renderHome();
   renderProgress();
+  scheduleNotification();
 }
 
 function checkStreak() {
-  const yest = new Date(Date.now()-86400000).toISOString().slice(0,10);
-  if (S.lastDoneDate && S.lastDoneDate < yest) {
+  if (!S.lastDoneDate) return;
+  const now   = new Date();
+  const last  = new Date(S.lastDoneDate + 'T12:00:00'); // mezzogiorno per evitare DST issues
+  const diffDays = Math.floor((new Date(today()+'T12:00:00') - last) / 86400000);
+  if (diffDays > 1) {
+    // più di un giorno fa → streak azzerato
     S.streak = 0; save();
   }
+}
+
+// ══ NOTIFICHE ════════════════════════════════════════
+async function scheduleNotification() {
+  if (!('Notification' in window) || !('serviceWorker' in navigator)) return;
+
+  // chiedi permesso solo se non ancora deciso
+  if (Notification.permission === 'default') {
+    // aspetta 3 secondi poi chiedi
+    setTimeout(async () => {
+      const perm = await Notification.requestPermission();
+      if (perm === 'granted') scheduleDaily();
+    }, 3000);
+  } else if (Notification.permission === 'granted') {
+    scheduleDaily();
+  }
+}
+
+function scheduleDaily() {
+  // Programma notifica alle 20:00 se non ha già studiato oggi
+  const now = new Date();
+  const target = new Date();
+  target.setHours(20, 0, 0, 0);
+  if (target <= now) target.setDate(target.getDate() + 1); // domani
+
+  const ms = target - now;
+  setTimeout(() => {
+    if (!isDoneToday()) {
+      new Notification('⚡ LexStudy — Studia oggi!', {
+        body: `Concetto di oggi: ${S.dailyConcept?.concept || 'Nuova lezione ti aspetta'}`,
+        icon: 'icon-192.png',
+        badge: 'icon-192.png',
+        tag: 'daily-reminder',
+        renotify: true,
+      });
+    }
+    // riprogramma per domani
+    setTimeout(scheduleDaily, 86400000);
+  }, ms);
 }
 
 function pickDailyConcept() {
@@ -989,7 +1037,7 @@ Rispondi SOLO con JSON valido, nessun testo extra:
     renderStep();
   } catch(e) {
     document.getElementById('stepWrap').innerHTML =
-      `<div class="loading-state">⚠️ Errore. <br><br><button onclick="generateLesson()" style="background:var(--blue-d);color:white;border:none;padding:10px 20px;border-radius:10px;font:800 0.9rem 'Nunito',sans-serif;cursor:pointer">Riprova</button></div>`;
+      `<div class="loading-state">⚠️ Errore nella generazione della lezione.<br><span style="font-size:0.75rem;word-break:break-word">${(e && e.message) ? String(e.message).slice(0,220) : ''}</span><br><br><button onclick="generateLesson()" style="background:var(--blue-d);color:white;border:none;padding:10px 20px;border-radius:10px;font:800 0.9rem 'Nunito',sans-serif;cursor:pointer">Riprova</button></div>`;
   }
 }
 
@@ -1281,7 +1329,7 @@ async function claude(prompt, maxTok = 1000) {
       "anthropic-version": "2023-06-01"
     },
     body: JSON.stringify({
-      model: "claude-sonnet-4-20250514",
+      model: "claude-sonnet-5-5",
       max_tokens: maxTok,
       messages: [{ role:"user", content: prompt }]
     })
@@ -1319,7 +1367,7 @@ async function submitKey() {
         "anthropic-version": "2023-06-01"
       },
       body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
+        model: "claude-sonnet-5-5",
         max_tokens: 10,
         messages: [{ role:"user", content: "ok" }]
       })
