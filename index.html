@@ -1021,7 +1021,7 @@ La lezione ha ESATTAMENTE 4 step:
 3. QUIZ - domanda a risposta multipla base (4 opzioni, una corretta)
 4. QUIZ - domanda avanzata come quelle delle tracce d'esame reali (4 opzioni, una corretta)
 
-Usa lo strumento crea_lezione per restituire la lezione.
+Devi rispondere SOLO chiamando lo strumento crea_lezione, senza scrivere altro testo.
 Per gli step intro ed esempio compila icon, title, body (l'intro anche highlight).
 Per gli step quiz compila question, options (4 voci che iniziano con "A) ", "B) ", "C) ", "D) "), correct (indice 0-3) ed explanation.
 Scrivi in italiano, con rigore tecnico e riferimenti normativi dove pertinenti.`;
@@ -1399,7 +1399,7 @@ async function claude(prompt, maxTok = 1000) {
   return text;
 }
 
-const LEX_BUILD = 'build-5-tooluse';
+const LEX_BUILD = 'build-6-tooluse-auto';
 
 // Genera la lezione con output strutturato: il JSON arriva già validato dall'API
 async function claudeLesson(prompt) {
@@ -1438,7 +1438,7 @@ async function claudeLesson(prompt) {
       model: 'claude-sonnet-5-5',
       max_tokens: 4000,
       tools: [{ name: 'crea_lezione', description: 'Crea la lezione interattiva strutturata.', input_schema: lessonSchema }],
-      tool_choice: { type: 'tool', name: 'crea_lezione' },
+      tool_choice: { type: 'auto' },
       messages: [{ role: 'user', content: prompt }]
     })
   });
