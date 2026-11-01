@@ -1,0 +1,1477 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>LexStudy — Esame Commercialista</title>
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0f172a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="LexStudy">
+<link rel="apple-touch-icon" href="icon-192.png">
+
+<!-- SEO / Share -->
+<meta name="description" content="Studia per l'Esame di Stato da Commercialista con lezioni AI giornaliere, quiz e progressi per materia.">
+<meta property="og:title" content="LexStudy — Commercialista">
+<meta property="og:description" content="Il Duolingo per l'esame da commercialista. Lezione AI ogni giorno, streak, XP, progressi per materia.">
+<meta property="og:type" content="website">
+
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --green:    #34d399;
+  --green-d:  #059669;
+  --blue:     #60a5fa;
+  --blue-d:   #2563eb;
+  --yellow:   #fbbf24;
+  --yellow-d: #d97706;
+  --orange:   #fb923c;
+  --orange-d: #ea580c;
+  --red:      #f87171;
+  --red-d:    #dc2626;
+  --purple:   #a78bfa;
+  --bg:       #0a0f1e;
+  --surface:  #111827;
+  --surface2: #1a2235;
+  --surface3: #202c3e;
+  --border:   rgba(255,255,255,0.06);
+  --border2:  rgba(255,255,255,0.11);
+  --text:     #f0f4ff;
+  --text-2:   #8b9ab5;
+  --text-3:   #4a5568;
+  --radius:   16px;
+  --radius-sm:10px;
+}
+* { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+body { font-family:'Nunito',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; overflow-x:hidden; }
+
+/* TOPBAR */
+.topbar { position:sticky; top:0; z-index:300; background:rgba(10,15,30,0.95); backdrop-filter:blur(20px); border-bottom:1px solid var(--border); height:56px; display:flex; align-items:center; justify-content:space-between; padding:0 18px; }
+.logo { font-family:'Syne',sans-serif; font-size:1.1rem; font-weight:800; color:var(--text); letter-spacing:-0.3px; }
+.logo span { background:linear-gradient(135deg,#60a5fa,#a78bfa); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.topbar-right { display:flex; align-items:center; gap:8px; }
+.tb-streak { display:flex; align-items:center; gap:5px; background:rgba(251,146,60,0.1); border:1px solid rgba(251,146,60,0.22); border-radius:20px; padding:5px 11px; font-size:0.8rem; font-weight:800; color:var(--orange); }
+.tb-xp { display:flex; align-items:center; gap:5px; background:rgba(251,191,36,0.08); border:1px solid rgba(251,191,36,0.18); border-radius:20px; padding:5px 11px; font-size:0.8rem; font-weight:800; color:var(--yellow); }
+.profile-chip { display:flex; align-items:center; gap:6px; background:var(--surface2); border:1px solid var(--border2); border-radius:20px; padding:4px 11px 4px 5px; cursor:pointer; transition:border-color 0.18s; }
+.profile-chip:hover { border-color:var(--blue); }
+.profile-avatar { width:24px; height:24px; border-radius:50%; background:linear-gradient(135deg,var(--blue),var(--purple)); display:flex; align-items:center; justify-content:center; font-size:0.7rem; font-weight:900; color:white; flex-shrink:0; }
+.profile-name { font-size:0.75rem; font-weight:800; color:var(--text-2); }
+
+/* SCREENS */
+.screen { display:none; }
+.screen.active { display:block; animation:fadeUp 0.26s ease; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+
+/* BOTTOM NAV */
+.bottom-nav { position:fixed; bottom:0; left:0; right:0; z-index:200; background:rgba(10,15,30,0.97); backdrop-filter:blur(20px); border-top:1px solid var(--border); display:grid; grid-template-columns:repeat(3,1fr); padding:8px 0 max(10px,env(safe-area-inset-bottom)); }
+.bnav-item { display:flex; flex-direction:column; align-items:center; gap:3px; padding:6px 0; cursor:pointer; color:var(--text-3); font-size:0.6rem; font-weight:800; letter-spacing:0.06em; text-transform:uppercase; transition:color 0.18s; border:none; background:none; font-family:'Nunito',sans-serif; }
+.bnav-item .bicon { font-size:1.2rem; transition:transform 0.18s; }
+.bnav-item.active { color:var(--blue); }
+.bnav-item.active .bicon { transform:scale(1.1); }
+
+/* HOME */
+.home-scroll { max-width:480px; margin:0 auto; padding:20px 16px 120px; }
+
+.streak-hero { background:linear-gradient(135deg,rgba(251,146,60,0.12) 0%,rgba(234,88,12,0.06) 100%); border:1px solid rgba(251,146,60,0.18); border-radius:var(--radius); padding:22px 20px 18px; margin-bottom:12px; position:relative; overflow:hidden; }
+.streak-hero::after { content:'🔥'; position:absolute; right:18px; top:50%; transform:translateY(-50%); font-size:3.2rem; opacity:0.1; pointer-events:none; }
+.sh-label { font-size:0.62rem; font-weight:800; color:var(--orange); text-transform:uppercase; letter-spacing:0.12em; margin-bottom:2px; }
+.sh-number { font-family:'Syne',sans-serif; font-size:2.8rem; font-weight:800; color:var(--orange); line-height:1; margin-bottom:4px; }
+.sh-sub { font-size:0.76rem; color:var(--text-2); font-weight:600; margin-bottom:16px; }
+.week-row { display:flex; gap:6px; align-items:flex-end; }
+.week-day { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; }
+.week-bar-wrap { width:100%; height:28px; display:flex; align-items:flex-end; }
+.week-bar { width:100%; border-radius:3px; background:var(--surface3); transition:height 0.5s cubic-bezier(0.4,0,0.2,1),background 0.3s; min-height:4px; }
+.week-bar.done { background:var(--orange); }
+.week-bar.today { background:rgba(251,146,60,0.35); border:1px solid var(--orange); }
+.week-bar.perfect { background:linear-gradient(180deg,var(--yellow),var(--orange)); }
+.week-label { font-size:0.58rem; font-weight:800; color:var(--text-3); text-transform:uppercase; }
+.week-label.done,.week-label.today { color:var(--orange); }
+
+.stats-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:12px; }
+.stat-box { background:var(--surface); border:1px solid var(--border2); border-radius:var(--radius-sm); padding:14px 10px; text-align:center; }
+.stat-box .sb-val { font-family:'Syne',sans-serif; font-size:1.4rem; font-weight:800; line-height:1; margin-bottom:4px; }
+.stat-box .sb-lbl { font-size:0.6rem; font-weight:800; color:var(--text-3); text-transform:uppercase; letter-spacing:0.07em; }
+.stat-box.xp .sb-val { color:var(--yellow); }
+.stat-box.acc .sb-val { color:var(--green); }
+.stat-box.lvl .sb-val { color:var(--purple); }
+
+.xp-bar-wrap { background:var(--surface); border:1px solid var(--border2); border-radius:var(--radius-sm); padding:11px 14px; margin-bottom:12px; }
+.xp-bar-top { display:flex; justify-content:space-between; font-size:0.72rem; font-weight:800; color:var(--text-3); margin-bottom:7px; }
+.xp-bar-top .val { color:var(--yellow); }
+.xp-track { background:var(--surface3); border-radius:4px; height:7px; overflow:hidden; }
+.xp-fill { height:100%; background:linear-gradient(90deg,var(--yellow),var(--orange)); border-radius:4px; transition:width 1s cubic-bezier(0.4,0,0.2,1); }
+
+.section-label { font-size:0.6rem; font-weight:800; color:var(--text-3); text-transform:uppercase; letter-spacing:0.12em; margin-bottom:9px; margin-top:18px; }
+
+.daily-card { background:var(--surface); border:1px solid var(--border2); border-radius:var(--radius); overflow:hidden; cursor:pointer; transition:transform 0.13s,border-color 0.18s; margin-bottom:12px; }
+.daily-card:hover { transform:translateY(-2px); border-color:rgba(96,165,250,0.35); }
+.daily-card:active { transform:translateY(1px); }
+.dc-header { background:linear-gradient(135deg,#141e36,#181d30); padding:11px 16px; display:flex; align-items:center; justify-content:space-between; }
+.dc-pill { font-size:0.6rem; font-weight:800; color:var(--blue); text-transform:uppercase; letter-spacing:0.1em; background:rgba(96,165,250,0.1); border:1px solid rgba(96,165,250,0.18); padding:3px 9px; border-radius:10px; }
+.dc-materia { font-size:0.68rem; font-weight:700; color:var(--text-3); }
+.dc-body { padding:14px 16px; }
+.dc-concept { font-family:'Syne',sans-serif; font-size:1rem; color:var(--text); margin-bottom:5px; line-height:1.35; }
+.dc-preview { font-size:0.78rem; color:var(--text-2); line-height:1.5; }
+.dc-footer { padding:9px 16px; border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+.dc-xp { font-size:0.72rem; font-weight:800; color:var(--yellow); }
+.dc-meta { font-size:0.72rem; color:var(--text-3); font-weight:700; }
+
+.cta-btn { width:100%; padding:14px; border-radius:var(--radius); border:none; font-family:'Nunito',sans-serif; font-size:0.88rem; font-weight:900; cursor:pointer; letter-spacing:0.04em; text-transform:uppercase; transition:all 0.14s; margin-bottom:12px; }
+.cta-btn.green { background:var(--green-d); color:white; box-shadow:0 4px 20px rgba(5,150,105,0.3); }
+.cta-btn.green:hover { background:#047857; }
+.cta-btn.disabled { background:var(--surface2); color:var(--text-3); cursor:default; pointer-events:none; box-shadow:none; }
+
+/* PROGRESS */
+.progress-scroll { max-width:480px; margin:0 auto; padding:20px 16px 120px; }
+.screen-title { font-family:'Syne',sans-serif; font-size:1.35rem; font-weight:800; margin-bottom:4px; }
+.screen-sub { font-size:0.8rem; color:var(--text-2); margin-bottom:18px; line-height:1.5; }
+.prova-card { background:var(--surface); border:1px solid var(--border2); border-radius:var(--radius); margin-bottom:10px; overflow:hidden; }
+.prova-header { padding:13px 15px; display:flex; align-items:center; gap:11px; cursor:pointer; }
+.prova-icon { width:38px; height:38px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:1rem; flex-shrink:0; }
+.prova-info { flex:1; }
+.prova-name { font-weight:800; font-size:0.86rem; color:var(--text); margin-bottom:2px; }
+.prova-sub  { font-size:0.7rem; color:var(--text-2); }
+.prova-badge { padding:3px 11px; border-radius:20px; font-size:0.65rem; font-weight:800; text-transform:uppercase; letter-spacing:0.06em; border:1px solid; white-space:nowrap; }
+.materie-list { display:none; border-top:1px solid var(--border); }
+.materia-row { padding:10px 15px 10px 64px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--border); }
+.materia-row:last-child { border-bottom:none; }
+.mr-name { font-size:0.78rem; font-weight:700; color:var(--text-2); }
+.mr-right { display:flex; align-items:center; gap:9px; }
+.mr-bar-wrap { width:68px; height:5px; background:var(--surface3); border-radius:3px; overflow:hidden; }
+.mr-bar-fill { height:100%; border-radius:3px; transition:width 0.8s ease; }
+.mr-pct { font-size:0.68rem; font-weight:800; color:var(--text-3); width:26px; text-align:right; }
+.p1{--pc:var(--blue);--pcb:rgba(96,165,250,0.1)} .p2{--pc:var(--purple);--pcb:rgba(167,139,250,0.1)} .p3{--pc:var(--green);--pcb:rgba(52,211,153,0.1)} .po{--pc:var(--yellow);--pcb:rgba(251,191,36,0.1)}
+.prova-icon{background:var(--pcb);color:var(--pc)} .prova-badge{color:var(--pc);border-color:var(--pc);background:var(--pcb)}
+.mr-bar-fill.p1{background:var(--blue)} .mr-bar-fill.p2{background:var(--purple)} .mr-bar-fill.p3{background:var(--green)} .mr-bar-fill.po{background:var(--yellow)}
+
+/* LESSON */
+.lesson-wrap { max-width:520px; margin:0 auto; padding:0 16px 100px; }
+.lesson-topbar { display:flex; align-items:center; gap:11px; padding:13px 0 9px; position:sticky; top:56px; background:var(--bg); z-index:10; }
+.close-btn { background:var(--surface2); border:1px solid var(--border2); color:var(--text-2); border-radius:8px; width:34px; height:34px; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:0.85rem; transition:background 0.14s; flex-shrink:0; }
+.close-btn:hover { background:var(--surface3); }
+.lesson-prog-track { flex:1; height:6px; border-radius:3px; background:var(--surface2); overflow:hidden; }
+.lesson-prog-fill { height:100%; background:linear-gradient(90deg,var(--blue),var(--purple)); border-radius:3px; transition:width 0.5s ease; }
+.lesson-xp-tag { font-size:0.78rem; font-weight:800; color:var(--yellow); white-space:nowrap; }
+.step-wrap { padding-top:10px; min-height:300px; }
+.step-icon { font-size:2.8rem; text-align:center; margin-bottom:12px; }
+.step-chip { display:inline-block; padding:4px 13px; border-radius:20px; font-size:0.62rem; font-weight:800; text-transform:uppercase; letter-spacing:0.1em; margin-bottom:12px; }
+.step-chip.blue  { background:rgba(96,165,250,0.1); color:var(--blue); border:1px solid rgba(96,165,250,0.22); }
+.step-chip.green { background:rgba(52,211,153,0.1); color:var(--green); border:1px solid rgba(52,211,153,0.22); }
+.step-title { font-family:'Syne',sans-serif; font-size:1.35rem; font-weight:800; color:var(--text); margin-bottom:13px; line-height:1.25; }
+.highlight-box { background:rgba(96,165,250,0.05); border:1px solid rgba(96,165,250,0.18); border-radius:var(--radius-sm); padding:13px 15px; margin-bottom:13px; }
+.hb-label { font-size:0.62rem; font-weight:800; text-transform:uppercase; letter-spacing:0.1em; color:var(--blue); margin-bottom:5px; }
+.hb-text  { font-size:0.84rem; line-height:1.65; color:var(--text-2); }
+.step-body-card { background:var(--surface); border:1px solid var(--border2); border-radius:var(--radius); padding:16px 18px; margin-bottom:10px; }
+.step-body-text { font-size:0.9rem; line-height:1.8; color:var(--text-2); white-space:pre-wrap; }
+.quiz-instruct { font-size:0.62rem; font-weight:800; text-transform:uppercase; letter-spacing:0.12em; color:var(--text-3); margin-bottom:11px; }
+.quiz-q { font-family:'Syne',sans-serif; font-size:0.98rem; font-weight:700; color:var(--text); margin-bottom:15px; line-height:1.5; }
+.opts { display:flex; flex-direction:column; gap:8px; margin-bottom:12px; }
+.opt { padding:12px 14px; background:var(--surface); border:1.5px solid var(--border2); border-radius:var(--radius-sm); cursor:pointer; font-family:'Nunito',sans-serif; font-size:0.86rem; font-weight:700; color:var(--text-2); text-align:left; display:flex; align-items:center; gap:10px; transition:all 0.13s; }
+.opt:hover:not(:disabled) { border-color:var(--blue); color:var(--text); background:rgba(96,165,250,0.05); }
+.opt.selected { border-color:var(--blue); color:var(--text); background:rgba(96,165,250,0.07); }
+.opt.correct  { border-color:var(--green-d); color:var(--green); background:rgba(52,211,153,0.07); }
+.opt.wrong    { border-color:var(--red-d); color:var(--red); background:rgba(248,113,113,0.07); }
+.opt:disabled { cursor:default; }
+.opt-letter { width:24px; height:24px; border-radius:6px; background:var(--surface3); display:flex; align-items:center; justify-content:center; font-size:0.7rem; font-weight:900; flex-shrink:0; transition:background 0.13s; }
+.opt.selected .opt-letter { background:var(--blue); color:white; }
+.opt.correct  .opt-letter { background:var(--green-d); color:white; }
+.opt.wrong    .opt-letter { background:var(--red-d); color:white; }
+.feedback { border-radius:var(--radius-sm); padding:12px 14px; margin-bottom:11px; display:none; animation:popIn 0.22s cubic-bezier(0.34,1.56,0.64,1); }
+.feedback.show { display:block; }
+.feedback.correct { background:rgba(52,211,153,0.06); border:1px solid rgba(52,211,153,0.22); }
+.feedback.wrong   { background:rgba(248,113,113,0.06); border:1px solid rgba(248,113,113,0.22); }
+.fb-title { font-size:0.86rem; font-weight:900; margin-bottom:5px; }
+.fb-title.correct { color:var(--green); }
+.fb-title.wrong   { color:var(--red); }
+.fb-exp { font-size:0.8rem; line-height:1.65; color:var(--text-2); }
+@keyframes popIn { from{transform:scale(0.93);opacity:0} to{transform:scale(1);opacity:1} }
+.complete-wrap { text-align:center; padding:22px 0 14px; }
+.complete-anim { font-size:3.8rem; margin-bottom:13px; animation:bounce 0.5s cubic-bezier(0.34,1.56,0.64,1); }
+@keyframes bounce { from{transform:scale(0)} to{transform:scale(1)} }
+.complete-title { font-family:'Syne',sans-serif; font-size:1.6rem; font-weight:800; color:var(--text); margin-bottom:5px; }
+.complete-sub   { font-size:0.82rem; color:var(--text-2); margin-bottom:20px; }
+.complete-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:9px; margin-bottom:22px; }
+.cs-box { background:var(--surface); border:1px solid var(--border2); border-radius:var(--radius-sm); padding:13px 8px; text-align:center; }
+.cs-val { font-family:'Syne',sans-serif; font-size:1.4rem; font-weight:800; }
+.cs-lbl { font-size:0.6rem; font-weight:800; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-3); margin-top:3px; }
+.cs-box.xp .cs-val { color:var(--yellow); }
+.cs-box.streak .cs-val { color:var(--orange); }
+.cs-box.acc .cs-val { color:var(--green); }
+.float-btn-wrap { position:fixed; bottom:0; left:0; right:0; z-index:250; padding:13px 16px max(13px,env(safe-area-inset-bottom)); background:linear-gradient(to top,var(--bg) 70%,transparent); }
+.float-btn { display:block; width:100%; max-width:508px; margin:0 auto; padding:14px; border-radius:var(--radius); border:none; font-family:'Nunito',sans-serif; font-size:0.88rem; font-weight:900; letter-spacing:0.04em; cursor:pointer; text-transform:uppercase; transition:all 0.14s; }
+.float-btn.green { background:var(--green-d); color:white; box-shadow:0 4px 18px rgba(5,150,105,0.32); }
+.float-btn.green:hover { background:#047857; }
+.float-btn.blue  { background:var(--blue-d); color:white; box-shadow:0 4px 18px rgba(37,99,235,0.32); }
+.float-btn.dis   { background:var(--surface2); color:var(--text-3); pointer-events:none; }
+.xp-pop { position:fixed; top:64px; right:14px; z-index:999; background:var(--yellow); color:#111; padding:6px 13px; border-radius:20px; font-weight:900; font-size:0.8rem; box-shadow:0 4px 14px rgba(251,191,36,0.38); animation:xpFloat 1.6s ease forwards; pointer-events:none; }
+@keyframes xpFloat { 0%{opacity:0;transform:translateY(0)} 15%{opacity:1} 80%{opacity:1;transform:translateY(-24px)} 100%{opacity:0;transform:translateY(-40px)} }
+.loading-state { text-align:center; padding:50px 20px; color:var(--text-3); }
+.spinner { width:30px; height:30px; border-radius:50%; border:3px solid var(--surface3); border-top-color:var(--blue); animation:spin 0.7s linear infinite; margin:0 auto 12px; }
+@keyframes spin { to{transform:rotate(360deg)} }
+.loading-txt { font-size:0.82rem; font-weight:700; }
+
+/* HISTORY */
+.history-scroll { max-width:480px; margin:0 auto; padding:20px 16px 120px; }
+.hist-card { background:var(--surface); border:1px solid var(--border2); border-radius:var(--radius); margin-bottom:8px; cursor:pointer; transition:border-color 0.14s,transform 0.12s; overflow:hidden; }
+.hist-card:hover { border-color:rgba(96,165,250,0.3); transform:translateY(-1px); }
+.hist-card:active { transform:translateY(1px); }
+.hist-top { padding:12px 14px; display:flex; align-items:center; gap:11px; }
+.hist-icon { width:36px; height:36px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:0.95rem; flex-shrink:0; background:var(--surface2); }
+.hist-info { flex:1; min-width:0; }
+.hist-concept { font-weight:800; font-size:0.83rem; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.hist-meta { font-size:0.7rem; color:var(--text-3); margin-top:2px; }
+.hist-badge { font-size:0.65rem; font-weight:800; padding:3px 9px; border-radius:10px; white-space:nowrap; flex-shrink:0; }
+.hist-badge.ok      { background:rgba(52,211,153,0.1); color:var(--green); border:1px solid rgba(52,211,153,0.18); }
+.hist-badge.partial { background:rgba(251,191,36,0.1); color:var(--yellow); border:1px solid rgba(251,191,36,0.18); }
+.review-modal { display:none; position:fixed; inset:0; z-index:400; background:rgba(0,0,0,0.75); align-items:flex-end; justify-content:center; }
+.review-modal.show { display:flex; }
+.review-sheet { background:var(--surface); border-radius:20px 20px 0 0; width:100%; max-width:540px; max-height:88vh; overflow-y:auto; padding:16px 16px 40px; animation:slideSheet 0.26s ease; }
+@keyframes slideSheet { from{transform:translateY(100%)} to{transform:translateY(0)} }
+.review-handle { width:34px; height:4px; border-radius:2px; background:var(--border2); margin:0 auto 13px; }
+.review-title { font-family:'Syne',sans-serif; font-size:1.05rem; font-weight:800; color:var(--text); margin-bottom:3px; }
+.review-sub { font-size:0.72rem; color:var(--text-3); margin-bottom:16px; }
+.review-step { background:var(--bg); border:1px solid var(--border); border-radius:var(--radius-sm); padding:13px; margin-bottom:9px; }
+.review-step-label { font-size:0.6rem; font-weight:800; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-3); margin-bottom:6px; }
+.review-step-title { font-weight:800; font-size:0.86rem; color:var(--text); margin-bottom:6px; }
+.review-step-body { font-size:0.8rem; line-height:1.7; color:var(--text-2); white-space:pre-wrap; }
+.review-q { font-weight:800; font-size:0.84rem; color:var(--text); margin-bottom:8px; }
+.review-opt { padding:8px 12px; border-radius:7px; font-size:0.8rem; font-weight:700; margin-bottom:5px; display:flex; align-items:center; gap:8px; }
+.review-opt.correct { background:rgba(52,211,153,0.06); border:1px solid rgba(52,211,153,0.22); color:var(--green); }
+.review-opt.wrong   { background:rgba(248,113,113,0.06); border:1px solid rgba(248,113,113,0.22); color:var(--red); }
+.review-opt.neutral { background:var(--surface2); border:1px solid var(--border); color:var(--text-3); }
+.review-exp { margin-top:8px; padding-top:8px; border-top:1px solid var(--border); font-size:0.78rem; line-height:1.6; color:var(--text-2); }
+
+/* LOGIN */
+.login-screen { display:none; position:fixed; inset:0; z-index:9999; background:var(--bg); align-items:center; justify-content:center; padding:24px; }
+.login-screen.show { display:flex; }
+.login-card { width:100%; max-width:400px; background:var(--surface); border:1px solid var(--border2); border-radius:20px; padding:30px 24px; }
+.login-logo { font-family:'Syne',sans-serif; font-size:1.6rem; font-weight:800; text-align:center; margin-bottom:4px; color:var(--text); }
+.login-logo span { background:linear-gradient(135deg,#60a5fa,#a78bfa); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.login-desc { text-align:center; font-size:0.75rem; color:var(--text-3); margin-bottom:20px; }
+.login-tabs { display:flex; background:var(--bg); border-radius:10px; padding:4px; margin-bottom:20px; }
+.login-tab { flex:1; padding:8px; border-radius:7px; border:none; font-family:'Nunito',sans-serif; font-size:0.8rem; font-weight:800; cursor:pointer; color:var(--text-3); background:transparent; transition:all 0.18s; }
+.login-tab.active { background:var(--surface2); color:var(--text); }
+.login-field { margin-bottom:12px; }
+.login-label { display:block; font-size:0.65rem; font-weight:800; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-3); margin-bottom:5px; }
+.login-input { width:100%; padding:11px 13px; background:var(--bg); border:1.5px solid var(--border2); border-radius:var(--radius-sm); color:var(--text); font-family:'Nunito',sans-serif; font-size:0.86rem; font-weight:600; outline:none; transition:border-color 0.18s; }
+.login-input:focus { border-color:var(--blue); }
+.login-input::placeholder { color:var(--text-3); }
+.login-error { font-size:0.76rem; color:var(--red); font-weight:700; display:none; margin-bottom:10px; text-align:center; }
+.login-error.show { display:block; }
+.login-btn { width:100%; padding:12px; background:var(--blue-d); color:white; border:none; border-radius:var(--radius-sm); font-family:'Nunito',sans-serif; font-size:0.86rem; font-weight:900; cursor:pointer; text-transform:uppercase; letter-spacing:0.04em; transition:background 0.18s; margin-top:2px; }
+.login-btn:hover { background:#1d4ed8; }
+.login-btn:disabled { opacity:0.5; cursor:not-allowed; }
+.login-note { font-size:0.68rem; color:var(--text-3); text-align:center; margin-top:12px; line-height:1.7; }
+.login-note a { color:var(--blue); text-decoration:none; }
+
+/* legacy screens hidden */
+.apikey-screen { display:none !important; }
+.stat-badge.heart { display:none; }
+</style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo">LexStudy</div>
+    <p style="text-align:center;font-size:0.82rem;color:var(--text-3);margin-bottom:20px">Esame di Stato — Commercialista</p>
+
+    <div class="login-tabs">
+      <button class="login-tab active" id="tabLogin" onclick="switchLoginTab('login')">Accedi</button>
+      <button class="login-tab" id="tabRegister" onclick="switchLoginTab('register')">Registrati</button>
+    </div>
+
+    <div id="loginForm">
+      <div class="login-field">
+        <label class="login-label">Username</label>
+        <input class="login-input" id="loginUser" type="text" placeholder="il tuo username" autocomplete="username">
+      </div>
+      <div class="login-field">
+        <label class="login-label">Password</label>
+        <input class="login-input" id="loginPass" type="password" placeholder="••••••••" autocomplete="current-password"
+          onkeydown="if(event.key==='Enter') doLogin()">
+      </div>
+      <div class="login-error" id="loginError">⚠ Username o password errati</div>
+      <button class="login-btn" onclick="doLogin()" id="loginBtn">Accedi →</button>
+    </div>
+
+    <div id="registerForm" style="display:none">
+      <div class="login-field">
+        <label class="login-label">Username</label>
+        <input class="login-input" id="regUser" type="text" placeholder="scegli un username">
+      </div>
+      <div class="login-field">
+        <label class="login-label">Password</label>
+        <input class="login-input" id="regPass" type="password" placeholder="almeno 6 caratteri">
+      </div>
+      <div class="login-field">
+        <label class="login-label">Anthropic API Key</label>
+        <input class="login-input" id="regKey" type="password" placeholder="sk-ant-api03-…">
+      </div>
+      <div class="login-error" id="registerError"></div>
+      <button class="login-btn" onclick="doRegister()" id="registerBtn">Crea account →</button>
+      <div class="login-note">
+        Ottieni la tua API key su <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a><br>
+        ~€0.003 per lezione
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- REVIEW MODAL -->
+<div class="review-modal" id="reviewModal" onclick="closeReview(event)">
+  <div class="review-sheet" id="reviewSheet">
+    <div class="review-handle"></div>
+    <div class="review-title" id="reviewTitle">—</div>
+    <div class="review-sub" id="reviewSub">—</div>
+    <div id="reviewContent"></div>
+  </div>
+</div>
+
+<!-- API KEY SCREEN -->
+<div class="apikey-screen" id="apikeyScreen">
+  <div class="apikey-card">
+    <div class="apikey-logo">LexStudy</div>
+    <div class="apikey-sub">
+      Inserisci la tua <strong style="color:var(--text)">Anthropic API Key</strong> per attivare le lezioni AI.<br>
+      La chiave viene salvata solo nel tuo browser.
+    </div>
+    <label class="apikey-label" for="apikeyInput">API Key</label>
+    <input class="apikey-input" id="apikeyInput" type="password"
+      placeholder="sk-ant-api03-…"
+      onkeydown="if(event.key==='Enter') submitKey()">
+    <div class="apikey-error" id="apikeyError">⚠ Chiave non valida. Controlla e riprova.</div>
+    <button class="apikey-btn" onclick="submitKey()" id="apikeyBtn">Accedi →</button>
+    <div class="apikey-note">
+      Non hai ancora una chiave?<br>
+      <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> → API Keys → Create Key<br><br>
+      Costo stimato: ~€0.003 per lezione
+    </div>
+  </div>
+</div>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="logo">LexStudy</div>
+  <div class="topbar-right">
+    <div class="tb-streak">🔥 <span id="tStreak">0</span></div>
+    <div class="tb-xp">⭐ <span id="tXP">0</span></div>
+    <div class="profile-chip" onclick="showProfileMenu()" id="profileChip">
+      <div class="profile-avatar" id="profileAvatar">G</div>
+      <span class="profile-name" id="profileName">—</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ HOME ═══ -->
+<div class="screen active" id="s-home">
+  <div class="home-scroll">
+
+    <!-- Streak hero con grafico settimanale -->
+    <div class="streak-hero">
+      <div class="sh-label">Serie attiva</div>
+      <div class="sh-number" id="hStreak">0</div>
+      <div class="sh-sub" id="shSub">giorni consecutivi — continua così!</div>
+      <div class="week-row" id="weekRow"></div>
+    </div>
+
+    <!-- Stats grid: XP, Precisione media, Livello -->
+    <div class="stats-grid">
+      <div class="stat-box xp">
+        <div class="sb-val" id="hXP">0</div>
+        <div class="sb-lbl">XP totali</div>
+      </div>
+      <div class="stat-box acc">
+        <div class="sb-val" id="hAcc">—</div>
+        <div class="sb-lbl">Precisione</div>
+      </div>
+      <div class="stat-box lvl">
+        <div class="sb-val" id="hLevel">1</div>
+        <div class="sb-lbl">Livello</div>
+      </div>
+    </div>
+
+    <!-- XP bar -->
+    <div class="xp-bar-wrap">
+      <div class="xp-bar-top">
+        <span>Lv.<span id="hLevelLabel">1</span> → Lv.<span id="hNextLevel">2</span></span>
+        <span class="val" id="hXPLabel">0 / 100 XP</span>
+      </div>
+      <div class="xp-track"><div class="xp-fill" id="hXPFill" style="width:0%"></div></div>
+    </div>
+
+    <!-- CTA -->
+    <button class="cta-btn green" id="homeCTA" onclick="startLesson()">▶ Inizia la lezione di oggi</button>
+
+    <!-- Concetto del giorno -->
+    <div class="section-label">⚡ Concetto del giorno</div>
+    <div class="daily-card" onclick="startLesson()" id="dailyCard">
+      <div class="dc-header">
+        <span class="dc-pill">Lezione AI</span>
+        <span class="dc-materia" id="dcMateriaTag">—</span>
+      </div>
+      <div class="dc-body">
+        <div class="dc-concept" id="dcConcept">Caricamento…</div>
+        <div class="dc-preview" id="dcPreview">L'AI sta scegliendo il concetto di oggi</div>
+      </div>
+      <div class="dc-footer">
+        <span class="dc-xp">+20 XP</span>
+        <span class="dc-meta">4 step · ~5 min</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══ PROGRESS ═══ -->
+<div class="screen" id="s-progress">
+  <div class="progress-scroll">
+    <div class="screen-title">I tuoi progressi</div>
+    <div class="screen-sub">Struttura ufficiale Esame di Stato (D.Lgs. 139/2005). Clicca su una prova per espandere le materie.</div>
+
+    <!-- PROVA 1 -->
+    <div class="prova-card p1">
+      <div class="prova-header" onclick="toggleProva('p1')">
+        <div class="prova-icon p1">📊</div>
+        <div class="prova-info">
+          <div class="prova-name">I Prova Scritta</div>
+          <div class="prova-sub">Ragioneria, Revisione, Tecnica, Finanza</div>
+        </div>
+        <div class="prova-badge p1" id="badge-p1">—</div>
+      </div>
+      <div class="materie-list" id="ml-p1">
+        <div class="materia-row"><span class="mr-name">Ragioneria Generale</span><div class="mr-right"><div class="mr-bar-wrap"><div class="mr-bar-fill p1" id="bar-ragioneria" style="width:0%"></div></div><span class="mr-pct" id="pct-ragioneria">0%</span></div></div>
+        <div class="materia-row"><span class="mr-name">Revisione Aziendale</span><div class="mr-right"><div class="mr-bar-wrap"><div class="mr-bar-fill p1" id="bar-revisione" style="width:0%"></div></div><span class="mr-pct" id="pct-revisione">0%</span></div></div>
+        <div class="materia-row"><span class="mr-name">Tecnica Professionale</span><div class="mr-right"><div class="mr-bar-wrap"><div class="mr-bar-fill p1" id="bar-tecnica" style="width:0%"></div></div><span class="mr-pct" id="pct-tecnica">0%</span></div></div>
+        <div class="materia-row"><span class="mr-name">Finanza Aziendale</span><div class="mr-right"><div class="mr-bar-wrap"><div class="mr-bar-fill p1" id="bar-finanza" style="width:0%"></div></div><span class="mr-pct" id="pct-finanza">0%</span></div></div>
+      </div>
+    </div>
+
+    <!-- PROVA 2 -->
+    <div class="prova-card p2">
+      <div class="prova-header" onclick="toggleProva('p2')">
+        <div class="prova-icon p2">⚖️</div>
+        <div class="prova-info">
+          <div class="prova-name">II Prova Scritta</div>
+          <div class="prova-sub">Diritto Privato, Commerciale, Tributario…</div>
+        </div>
+        <div class="prova-badge p2" id="badge-p2">—</div>
+      </div>
+      <div class="materie-list" id="ml-p2">
+        <div class="materia-row"><span class="mr-name">Diritto Privato</span><div class="mr-right"><div class="mr-bar-wrap"><div class="mr-bar-fill p2" id="bar-privato" style="width:0%"></div></div><span class="mr-pct" id="pct-privato">0%</span></div></div>
+        <div class="materia-row"><span class="mr-name">Diritto Commerciale</span><div class="mr-right"><div class="mr-bar-wrap"><div class="mr-bar-fill p2" id="bar-commerciale" style="width:0%"></div></div><span class="mr-pct" id="pct-commerciale">0%</span></div></div>
+        <div class="materia-row"><span class="mr-name">Diritto Fallimentare</span><div class="mr-right"><div class="mr-bar-wrap"><div class="mr-bar-fill p2" id="bar-fallimentare" style="width:0%"></div></div><span class="mr-pct" id="pct-fallimentare">0%</span></div></div>
+        <div class="materia-row"><span class="mr-name">Diritto Tributario</span><div class="mr-right"><div class="mr-bar-wrap"><div class="mr-bar-fill p2" id="bar-tributario" style="width:0%"></div></div><span class="mr-pct" id="pct-tributario">0%</span></div></div>
+        <div class="materia-row"><span class="mr-name">Diritto del Lavoro</span><div class="mr-right"><div class="mr-bar-wrap"><div class="mr-bar-fill p2" id="bar-lavoro" style="width:0%"></div></div><span class="mr-pct" id="pct-lavoro">0%</span></div></div>
+      </div>
+    </div>
+
+    <!-- PROVA 3 -->
+    <div class="prova-card p3">
+      <div class="prova-header" onclick="toggleProva('p3')">
+        <div class="prova-icon p3">✏️</div>
+        <div class="prova-info">
+          <div class="prova-name">III Prova Pratica</div>
+          <div class="prova-sub">Esercitazioni tecniche + Contenzioso tributario</div>
+        </div>
+        <div class="prova-badge p3" id="badge-p3">—</div>
+      </div>
+      <div class="materie-list" id="ml-p3">
+        <div class="materia-row"><span class="mr-name">Esercitazioni Contabili</span><div class="mr-right"><div class="mr-bar-wrap"><div class="mr-bar-fill p3" id="bar-eserci" style="width:0%"></div></div><span class="mr-pct" id="pct-eserci">0%</span></div></div>
+        <div class="materia-row"><span class="mr-name">Contenzioso Tributario</span><div class="mr-right"><div class="mr-bar-wrap"><div class="mr-bar-fill p3" id="bar-contenzioso" style="width:0%"></div></div><span class="mr-pct" id="pct-contenzioso">0%</span></div></div>
+      </div>
+    </div>
+
+    <!-- ORALE -->
+    <div class="prova-card po">
+      <div class="prova-header" onclick="toggleProva('po')">
+        <div class="prova-icon po">🎤</div>
+        <div class="prova-info">
+          <div class="prova-name">Prova Orale</div>
+          <div class="prova-sub">Tutte le materie + Deontologia, Informatica…</div>
+        </div>
+        <div class="prova-badge po" id="badge-po">—</div>
+      </div>
+      <div class="materie-list" id="ml-po">
+        <div class="materia-row"><span class="mr-name">Economia Politica</span><div class="mr-right"><div class="mr-bar-wrap"><div class="mr-bar-fill po" id="bar-econpol" style="width:0%"></div></div><span class="mr-pct" id="pct-econpol">0%</span></div></div>
+        <div class="materia-row"><span class="mr-name">Deontologia Professionale</span><div class="mr-right"><div class="mr-bar-wrap"><div class="mr-bar-fill po" id="bar-deonto" style="width:0%"></div></div><span class="mr-pct" id="pct-deonto">0%</span></div></div>
+        <div class="materia-row"><span class="mr-name">Matematica & Statistica</span><div class="mr-right"><div class="mr-bar-wrap"><div class="mr-bar-fill po" id="bar-matstat" style="width:0%"></div></div><span class="mr-pct" id="pct-matstat">0%</span></div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══ LESSON ═══ -->
+<div class="screen" id="s-lesson">
+  <div class="lesson-wrap">
+    <div class="lesson-topbar">
+      <div class="close-btn" onclick="exitLesson()">✕</div>
+      <div class="lesson-prog-track">
+        <div class="lesson-prog-fill" id="lpFill" style="width:0%"></div>
+      </div>
+      <div class="lesson-xp-tag">⭐ <span id="lXP">0</span></div>
+    </div>
+    <div class="step-wrap" id="stepWrap">
+      <div class="loading-state"><div class="spinner"></div><div class="loading-txt">Preparazione lezione…</div></div>
+    </div>
+  </div>
+  <div class="float-btn-wrap" id="floatBtnWrap">
+    <button class="float-btn dis" id="floatBtn" onclick="handleBtn()">Continua</button>
+  </div>
+</div>
+
+<!-- ═══ HISTORY ═══ -->
+<div class="screen" id="s-history">
+  <div class="history-scroll">
+    <div class="screen-title">Storico lezioni</div>
+    <div class="screen-sub" style="font-size:0.8rem;color:var(--text-2);margin-bottom:18px">Clicca su una lezione per rivedere domande e risposte.</div>
+    <div id="historyList"></div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav" id="bottomNav">
+  <button class="bnav-item active" onclick="goScreen('home')" id="bn-home">
+    <span class="bicon">🏠</span>Home
+  </button>
+  <button class="bnav-item" onclick="goScreen('history')" id="bn-history">
+    <span class="bicon">📚</span>Storico
+  </button>
+  <button class="bnav-item" onclick="goScreen('progress')" id="bn-progress">
+    <span class="bicon">📈</span>Progressi
+  </button>
+  <button class="bnav-item" onclick="goScreen('lesson')" id="bn-lesson" style="display:none">
+    <span class="bicon">📖</span>Lezione
+  </button>
+</div>
+
+<script>
+// ══ STATE ═════════════════════════════════════════════
+const USERS_KEY = 'lexstudy_users';
+let S = {};
+let currentUser = null;
+
+// ── Supabase config ───────────────────────────────────
+const SB_URL = 'https://xuzflkdbardbywcasdrj.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh1emZsa2RiYXJkYnl3Y2FzZHJqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4MzczMDcsImV4cCI6MjA4OTQxMzMwN30.8tXJCea1YJjOaJST9fjrxjgNGFnkzppuCdUZsIjR6IA';
+
+async function sbFetch(path, method = 'GET', body = null) {
+  const opts = {
+    method,
+    headers: {
+      'apikey': SB_KEY,
+      'Authorization': 'Bearer ' + SB_KEY,
+      'Content-Type': 'application/json',
+      'Prefer': method === 'POST' ? 'resolution=merge-duplicates,return=representation' : ''
+    }
+  };
+  if (body) opts.body = JSON.stringify(body);
+  const r = await fetch(SB_URL + '/rest/v1/' + path, opts);
+  if (!r.ok) { const e = await r.text(); throw new Error(e); }
+  const txt = await r.text();
+  return txt ? JSON.parse(txt) : null;
+}
+
+async function sbGetUser(username) {
+  const rows = await sbFetch(`user_data?username=eq.${encodeURIComponent(username)}&select=*`);
+  return rows?.[0] || null;
+}
+
+async function sbSaveUser(username, passHash, apiKey, data) {
+  return sbFetch('user_data', 'POST', { username, pass_hash: passHash, api_key: apiKey, data, updated_at: new Date().toISOString() });
+}
+
+async function sbUpdateData(username, data) {
+  return sbFetch(`user_data?username=eq.${encodeURIComponent(username)}`, 'PATCH', { data, updated_at: new Date().toISOString() });
+}
+
+// ── Materie → prova mapping ───────────────────────────
+const MATERIE_PROVA = {
+  ragioneria:'p1', revisione:'p1', tecnica:'p1', finanza:'p1',
+  privato:'p2', commerciale:'p2', fallimentare:'p2', tributario:'p2', lavoro:'p2',
+  eserci:'p3', contenzioso:'p3',
+  econpol:'po', deonto:'po', matstat:'po'
+};
+
+const CURRICULUM = [
+  {concept:"Principio di competenza economica", materia:"Ragioneria Generale", materiaId:"ragioneria", provaId:"p1", prova:"I Prova"},
+  {concept:"Società a responsabilità limitata (S.r.l.)", materia:"Diritto Commerciale", materiaId:"commerciale", provaId:"p2", prova:"II Prova"},
+  {concept:"IVA: presupposti e meccanismo applicativo", materia:"Diritto Tributario", materiaId:"tributario", provaId:"p2", prova:"II Prova"},
+  {concept:"Revisione del bilancio: giudizio e relazione", materia:"Revisione Aziendale", materiaId:"revisione", provaId:"p1", prova:"I Prova"},
+  {concept:"Procedure concorsuali: fallimento e concordato", materia:"Diritto Fallimentare", materiaId:"fallimentare", provaId:"p2", prova:"II Prova"},
+  {concept:"Ammortamenti: metodi e trattamento fiscale", materia:"Ragioneria Generale", materiaId:"ragioneria", provaId:"p1", prova:"I Prova"},
+  {concept:"Contratto di locazione e affitto d'azienda", materia:"Diritto Privato", materiaId:"privato", provaId:"p2", prova:"II Prova"},
+  {concept:"Analisi di bilancio: indici di redditività", materia:"Tecnica Professionale", materiaId:"tecnica", provaId:"p1", prova:"I Prova"},
+  {concept:"IRES: determinazione del reddito d'impresa", materia:"Diritto Tributario", materiaId:"tributario", provaId:"p2", prova:"II Prova"},
+  {concept:"Deontologia professionale del commercialista", materia:"Deontologia Professionale", materiaId:"deonto", provaId:"po", prova:"Orale"},
+  {concept:"Leasing finanziario e operativo (OIC 16)", materia:"Ragioneria Generale", materiaId:"ragioneria", provaId:"p1", prova:"I Prova"},
+  {concept:"Società per azioni: organi e governance", materia:"Diritto Commerciale", materiaId:"commerciale", provaId:"p2", prova:"II Prova"},
+  {concept:"Accertamento tributario: tipologie e termini", materia:"Diritto Tributario", materiaId:"tributario", provaId:"p2", prova:"II Prova"},
+  {concept:"Cash flow: rendiconto finanziario OIC 10", materia:"Ragioneria Generale", materiaId:"ragioneria", provaId:"p1", prova:"I Prova"},
+  {concept:"Diritto del lavoro: contratto a termine", materia:"Diritto del Lavoro", materiaId:"lavoro", provaId:"p2", prova:"II Prova"},
+  {concept:"Valutazione delle partecipazioni societarie", materia:"Finanza Aziendale", materiaId:"finanza", provaId:"p1", prova:"I Prova"},
+  {concept:"Eredità e donazione: aspetti fiscali", materia:"Diritto Tributario", materiaId:"tributario", provaId:"p2", prova:"II Prova"},
+  {concept:"Perdite su crediti: deducibilità fiscale", materia:"Ragioneria Generale", materiaId:"ragioneria", provaId:"p1", prova:"I Prova"},
+  {concept:"Ricorso tributario e contenzioso", materia:"Diritto Tributario", materiaId:"tributario", provaId:"p2", prova:"II Prova"},
+  {concept:"Ristrutturazione del debito (OIC 6)", materia:"Ragioneria Generale", materiaId:"ragioneria", provaId:"p1", prova:"I Prova"},
+];
+
+const PROVA_COLORS = { p1:'p1', p2:'p2', p3:'p3', po:'po' };
+
+// ── Helpers ───────────────────────────────────────────
+function hashPass(pass) {
+  let h = 0;
+  for (let i = 0; i < pass.length; i++) { h = ((h << 5) - h) + pass.charCodeAt(i); h |= 0; }
+  return h.toString(36);
+}
+
+function emptyUserData() {
+  return { xp:0, streak:0, lastDoneDate:null, completedDates:[], completedConcepts:[], dailyConcept:null, dailyDate:null, materiaXP:{}, lessonHistory:[] };
+}
+
+// ── Local cache (fallback offline) ───────────────────
+function loadLocalUser(username) {
+  try { const r = localStorage.getItem('lex_user_' + username); return r ? JSON.parse(r) : null; } catch(e){ return null; }
+}
+function saveLocalUser(username, userData) {
+  try { localStorage.setItem('lex_user_' + username, JSON.stringify(userData)); } catch(e){}
+}
+
+// ══ LOGIN / REGISTER ══════════════════════════════════
+function switchLoginTab(tab) {
+  document.getElementById('tabLogin').classList.toggle('active', tab === 'login');
+  document.getElementById('tabRegister').classList.toggle('active', tab === 'register');
+  document.getElementById('loginForm').style.display = tab === 'login' ? '' : 'none';
+  document.getElementById('registerForm').style.display = tab === 'register' ? '' : 'none';
+  document.getElementById('loginError').classList.remove('show');
+  document.getElementById('registerError').classList.remove('show');
+}
+
+async function doLogin() {
+  const username = document.getElementById('loginUser').value.trim().toLowerCase();
+  const password = document.getElementById('loginPass').value;
+  const errEl = document.getElementById('loginError');
+  const btn = document.getElementById('loginBtn');
+  errEl.classList.remove('show');
+  if (!username || !password) { errEl.textContent = '⚠ Inserisci username e password'; errEl.classList.add('show'); return; }
+
+  btn.textContent = 'Accesso…'; btn.disabled = true;
+  try {
+    let user = await sbGetUser(username);
+    if (!user) {
+      // prova cache locale (offline)
+      const local = loadLocalUser(username);
+      if (local && local.passHash === hashPass(password)) {
+        user = local;
+      } else {
+        errEl.textContent = '⚠ Username non trovato'; errEl.classList.add('show');
+        btn.textContent = 'Accedi →'; btn.disabled = false; return;
+      }
+    }
+    if (user.pass_hash !== hashPass(password)) {
+      errEl.textContent = '⚠ Password errata'; errEl.classList.add('show');
+      btn.textContent = 'Accedi →'; btn.disabled = false; return;
+    }
+    saveLocalUser(username, user);
+    loginSuccess(username, user);
+  } catch(e) {
+    // fallback offline
+    const local = loadLocalUser(username);
+    if (local && local.passHash === hashPass(password)) {
+      loginSuccess(username, local);
+    } else {
+      errEl.textContent = '⚠ Errore di rete. Controlla la connessione.'; errEl.classList.add('show');
+    }
+  }
+  btn.textContent = 'Accedi →'; btn.disabled = false;
+}
+
+async function doRegister() {
+  const username = document.getElementById('regUser').value.trim().toLowerCase();
+  const password = document.getElementById('regPass').value;
+  const apiKey   = document.getElementById('regKey').value.trim();
+  const errEl    = document.getElementById('registerError');
+  const btn      = document.getElementById('registerBtn');
+  errEl.classList.remove('show');
+
+  if (!username || username.length < 3) { errEl.textContent = '⚠ Username minimo 3 caratteri'; errEl.classList.add('show'); return; }
+  if (!password || password.length < 6) { errEl.textContent = '⚠ Password minimo 6 caratteri'; errEl.classList.add('show'); return; }
+  if (!apiKey.startsWith('sk-ant-'))    { errEl.textContent = '⚠ API key non valida'; errEl.classList.add('show'); return; }
+
+  btn.textContent = 'Verifica…'; btn.disabled = true;
+
+  // verifica API key
+  try {
+    const r = await fetch(PROXY, {
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01'},
+      body: JSON.stringify({model:'claude-sonnet-5-5',max_tokens:10,messages:[{role:'user',content:'ok'}]})
+    });
+    if (!r.ok) throw new Error('invalid key');
+  } catch(e) {
+    errEl.textContent = '⚠ API key non valida o errore di rete'; errEl.classList.add('show');
+    btn.textContent = 'Crea account →'; btn.disabled = false; return;
+  }
+
+  btn.textContent = 'Creazione account…';
+  const passHash = hashPass(password);
+  const data = emptyUserData();
+
+  try {
+    const existing = await sbGetUser(username);
+    if (existing) { errEl.textContent = '⚠ Username già in uso'; errEl.classList.add('show'); btn.textContent = 'Crea account →'; btn.disabled = false; return; }
+    await sbSaveUser(username, passHash, apiKey, data);
+    const user = { username, pass_hash: passHash, api_key: apiKey, data };
+    saveLocalUser(username, user);
+    loginSuccess(username, user);
+  } catch(e) {
+    errEl.textContent = '⚠ Errore salvataggio: ' + e.message; errEl.classList.add('show');
+  }
+  btn.textContent = 'Crea account →'; btn.disabled = false;
+}
+
+function loginSuccess(username, user) {
+  currentUser = username;
+  S = user.data || emptyUserData();
+  localStorage.setItem('lex_current_user', username);
+  document.getElementById('loginScreen').classList.remove('show');
+  document.getElementById('apikeyScreen').classList.remove('show');
+  document.getElementById('profileAvatar').textContent = username[0].toUpperCase();
+  document.getElementById('profileName').textContent = username;
+  checkStreak();
+  pickDailyConcept();
+  renderHome();
+  renderProgress();
+  renderHistory();
+}
+
+async function save() {
+  if (!currentUser) return;
+  // salva locale subito
+  const local = loadLocalUser(currentUser);
+  if (local) { local.data = S; saveLocalUser(currentUser, local); }
+  // sync su Supabase in background
+  try { await sbUpdateData(currentUser, S); } catch(e) { console.warn('Sync offline, dati salvati localmente'); }
+}
+
+function getApiKey() {
+  const local = loadLocalUser(currentUser);
+  return local?.api_key || '';
+}
+
+function showProfileMenu() {
+  if (confirm(`Sei loggato come "${currentUser}"\n\nVuoi uscire?`)) logout();
+}
+
+function logout() {
+  currentUser = null; S = {};
+  localStorage.removeItem('lex_current_user');
+  document.getElementById('loginScreen').classList.add('show');
+  document.getElementById('loginUser').value = '';
+  document.getElementById('loginPass').value = '';
+  document.getElementById('loginError').classList.remove('show');
+}
+
+// ══ PERSISTENCE ══════════════════════════════════════
+// Usa fuso orario locale (non UTC) per evitare bug di mezzanotte
+function today() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function isDoneToday() { return S.completedDates?.includes(today()); }
+
+// ══ LESSON STATE ══════════════════════════════════════
+let L = {};
+
+// ══ INIT ══════════════════════════════════════════════
+async function init() {
+  checkStreak();
+  pickDailyConcept();
+  renderHome();
+  renderProgress();
+  scheduleNotification();
+}
+
+function checkStreak() {
+  if (!S.lastDoneDate) return;
+  const now   = new Date();
+  const last  = new Date(S.lastDoneDate + 'T12:00:00'); // mezzogiorno per evitare DST issues
+  const diffDays = Math.floor((new Date(today()+'T12:00:00') - last) / 86400000);
+  if (diffDays > 1) {
+    // più di un giorno fa → streak azzerato
+    S.streak = 0; save();
+  }
+}
+
+// ══ NOTIFICHE ════════════════════════════════════════
+async function scheduleNotification() {
+  if (!('Notification' in window) || !('serviceWorker' in navigator)) return;
+
+  // chiedi permesso solo se non ancora deciso
+  if (Notification.permission === 'default') {
+    // aspetta 3 secondi poi chiedi
+    setTimeout(async () => {
+      const perm = await Notification.requestPermission();
+      if (perm === 'granted') scheduleDaily();
+    }, 3000);
+  } else if (Notification.permission === 'granted') {
+    scheduleDaily();
+  }
+}
+
+function scheduleDaily() {
+  // Programma notifica alle 20:00 se non ha già studiato oggi
+  const now = new Date();
+  const target = new Date();
+  target.setHours(20, 0, 0, 0);
+  if (target <= now) target.setDate(target.getDate() + 1); // domani
+
+  const ms = target - now;
+  setTimeout(() => {
+    if (!isDoneToday()) {
+      new Notification('⚡ LexStudy — Studia oggi!', {
+        body: `Concetto di oggi: ${S.dailyConcept?.concept || 'Nuova lezione ti aspetta'}`,
+        icon: 'icon-192.png',
+        badge: 'icon-192.png',
+        tag: 'daily-reminder',
+        renotify: true,
+      });
+    }
+    // riprogramma per domani
+    setTimeout(scheduleDaily, 86400000);
+  }, ms);
+}
+
+function pickDailyConcept() {
+  if (S.dailyDate === today() && S.dailyConcept) return;
+  // pick by day-of-year, skip already completed today
+  const doy = Math.floor((Date.now() - new Date(new Date().getFullYear(),0,0)) / 86400000);
+  S.dailyConcept = CURRICULUM[doy % CURRICULUM.length];
+  S.dailyDate = today();
+  save();
+}
+
+// ══ HOME ══════════════════════════════════════════════
+function renderHome() {
+  // topbar
+  document.getElementById('tStreak').textContent = S.streak;
+  document.getElementById('tXP').textContent = S.xp;
+
+  // streak hero
+  document.getElementById('hStreak').textContent = S.streak;
+  document.getElementById('shSub').textContent =
+    S.streak === 0 ? 'Inizia oggi la tua serie!' :
+    S.streak === 1 ? 'Primo giorno — continua domani!' :
+    `${S.streak} giorni consecutivi — non spezzarla!`;
+
+  // weekly bar chart (ultimi 7 giorni)
+  renderWeekChart();
+
+  // stats grid
+  document.getElementById('hXP').textContent = S.xp;
+  document.getElementById('hLevel').textContent = Math.floor(S.xp / 100) + 1;
+
+  // media precisione
+  const history = S.lessonHistory || [];
+  if (history.length > 0) {
+    const avg = Math.round(history.slice(0, 10).reduce((a, h) => a + (h.accuracy || 0), 0) / Math.min(history.length, 10));
+    document.getElementById('hAcc').textContent = avg + '%';
+  } else {
+    document.getElementById('hAcc').textContent = '—';
+  }
+
+  // XP bar
+  const level = Math.floor(S.xp / 100) + 1;
+  const xpIn  = S.xp % 100;
+  document.getElementById('hLevelLabel').textContent = level;
+  document.getElementById('hNextLevel').textContent = level + 1;
+  document.getElementById('hXPLabel').textContent = `${xpIn} / 100 XP`;
+  document.getElementById('hXPFill').style.width = xpIn + '%';
+
+  // daily card
+  const dc = S.dailyConcept;
+  if (dc) {
+    document.getElementById('dcMateriaTag').textContent = dc.materia;
+    document.getElementById('dcConcept').textContent = dc.concept;
+    document.getElementById('dcPreview').textContent = dc.prova + ' — Clicca per iniziare';
+  }
+
+  // CTA
+  const cta = document.getElementById('homeCTA');
+  const card = document.getElementById('dailyCard');
+  if (isDoneToday()) {
+    cta.textContent = '✓ Lezione completata oggi!';
+    cta.className = 'cta-btn disabled';
+    card.style.opacity = '0.5';
+    card.style.pointerEvents = 'none';
+  } else {
+    cta.textContent = '▶ Inizia la lezione di oggi';
+    cta.className = 'cta-btn green';
+    card.style.opacity = '1';
+    card.style.pointerEvents = '';
+  }
+}
+
+function renderWeekChart() {
+  const row = document.getElementById('weekRow');
+  if (!row) return;
+  row.innerHTML = '';
+  const DAYS = ['L','M','M','G','V','S','D'];
+  const todayD = new Date();
+  const dow = todayD.getDay();
+  const mon = dow === 0 ? -6 : 1 - dow;
+  const history = S.lessonHistory || [];
+
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(todayD);
+    d.setDate(todayD.getDate() + mon + i);
+    const ds = d.toISOString().slice(0,10);
+    const isToday = ds === today();
+    const isDone = S.completedDates?.includes(ds);
+    const dayHistory = history.filter(h => h.date === ds);
+    const acc = dayHistory.length > 0 ? dayHistory[0].accuracy : 0;
+
+    // altezza barra proporzionale alla precisione (min 10%, max 100%)
+    const barH = isDone ? Math.max(20, acc) : (isToday ? 15 : 8);
+    const isPerfect = isDone && acc === 100;
+
+    const dayEl = document.createElement('div');
+    dayEl.className = 'week-day';
+    dayEl.innerHTML = `
+      <div class="week-bar-wrap">
+        <div class="week-bar ${isPerfect ? 'perfect' : isDone ? 'done' : isToday ? 'today' : ''}"
+          style="height:${barH}%"
+          title="${isDone ? acc + '% precisione' : isToday ? 'oggi' : ''}"></div>
+      </div>
+      <div class="week-label ${isDone ? 'done' : isToday ? 'today' : ''}">${DAYS[i]}</div>
+    `;
+    row.appendChild(dayEl);
+  }
+}
+
+// ══ PROGRESS ═══════════════════════════════════════════
+function renderProgress() {
+  const allM = Object.keys(MATERIE_PROVA);
+  allM.forEach(mid => {
+    const xp = S.materiaXP[mid] || 0;
+    const pct = Math.min(100, xp * 5); // 20 lessons = 100%
+    const el = document.getElementById('bar-' + mid);
+    const pt = document.getElementById('pct-' + mid);
+    if (el) el.style.width = pct + '%';
+    if (pt) pt.textContent = Math.round(pct) + '%';
+  });
+
+  // level badges per prova
+  const provas = { p1:['ragioneria','revisione','tecnica','finanza'],
+                   p2:['privato','commerciale','fallimentare','tributario','lavoro'],
+                   p3:['eserci','contenzioso'],
+                   po:['econpol','deonto','matstat'] };
+
+  Object.entries(provas).forEach(([pid, mids]) => {
+    const avg = mids.reduce((a,m) => a + (S.materiaXP[m]||0), 0) / mids.length;
+    const badge = document.getElementById('badge-' + pid);
+    if (badge) {
+      if (avg === 0) badge.textContent = '—';
+      else if (avg < 4) badge.textContent = 'Principiante';
+      else if (avg < 10) badge.textContent = 'Intermedio';
+      else badge.textContent = 'Avanzato';
+    }
+  });
+}
+
+function toggleProva(pid) {
+  const el = document.getElementById('ml-' + pid);
+  if (!el) return;
+  el.style.display = el.style.display === 'block' ? 'none' : 'block';
+}
+
+// ══ LESSON ════════════════════════════════════════════
+async function startLesson() {
+  if (isDoneToday()) return;
+
+  L = { steps:[], cur:0, xp:0, correct:0, total:0, answered:false, sel:null, data:null };
+  goScreen('lesson');
+  document.getElementById('lpFill').style.width = '0%';
+  document.getElementById('lXP').textContent = '0';
+  document.getElementById('stepWrap').innerHTML =
+    `<div class="loading-state"><div class="spinner"></div><div class="loading-txt">Preparazione lezione su "${S.dailyConcept?.concept}"…</div></div>`;
+  setBtn('dis','Continua');
+
+  await generateLesson();
+}
+
+async function generateLesson() {
+  const dc = S.dailyConcept;
+  const prompt = `Sei un docente preparatore per l'Esame di Stato da Dottore Commercialista in Italia.
+Crea una lezione interattiva stile app di apprendimento sul concetto: "${dc.concept}"
+Materia: ${dc.materia} (${dc.prova})
+
+La lezione ha ESATTAMENTE 4 step:
+1. INTRO - spiegazione chiara e precisa (max 130 parole)
+2. ESEMPIO - caso pratico reale ispirato alle tracce d'esame (max 110 parole)
+3. QUIZ - domanda a risposta multipla base (4 opzioni, una corretta)
+4. QUIZ - domanda avanzata come quelle delle tracce d'esame reali (4 opzioni, una corretta)
+
+Rispondi SOLO con JSON valido, nessun testo extra:
+{
+  "concept": "${dc.concept}",
+  "materia": "${dc.materia}",
+  "steps": [
+    {"type":"intro","icon":"emoji","title":"titolo conciso","body":"spiegazione","highlight":"norma/principio chiave"},
+    {"type":"esempio","icon":"emoji","title":"Caso Pratico","body":"caso pratico dettagliato"},
+    {"type":"quiz","question":"domanda","options":["A) ...","B) ...","C) ...","D) ..."],"correct":0,"explanation":"spiegazione risposta (2-3 righe)"},
+    {"type":"quiz","question":"domanda avanzata","options":["A) ...","B) ...","C) ...","D) ..."],"correct":1,"explanation":"spiegazione"}
+  ]
+}`;
+
+  try {
+    const raw = await claude(prompt, 1500);
+    const data = JSON.parse(raw.replace(/```json|```/g,'').trim());
+    L.steps = data.steps;
+    L.data = data;
+    renderStep();
+  } catch(e) {
+    document.getElementById('stepWrap').innerHTML =
+      `<div class="loading-state">⚠️ Errore nella generazione della lezione.<br><span style="font-size:0.75rem;word-break:break-word">${(e && e.message) ? String(e.message).slice(0,220) : ''}</span><br><br><button onclick="generateLesson()" style="background:var(--blue-d);color:white;border:none;padding:10px 20px;border-radius:10px;font:800 0.9rem 'Nunito',sans-serif;cursor:pointer">Riprova</button></div>`;
+  }
+}
+
+function renderStep() {
+  const total = L.steps.length;
+  document.getElementById('lpFill').style.width = (L.cur/total*100) + '%';
+
+  if (L.cur >= total) { renderComplete(); return; }
+
+  L.answered = false; L.sel = null;
+  const step = L.steps[L.cur];
+
+  if (step.type === 'intro' || step.type === 'esempio') {
+    renderInfo(step);
+    setBtn('green','Continua →');
+  } else {
+    L.total++;
+    renderQuiz(step);
+    setBtn('dis','Seleziona una risposta');
+  }
+}
+
+function renderInfo(s) {
+  document.getElementById('stepWrap').innerHTML = `
+    <div>
+      <div class="step-icon">${s.icon||'📖'}</div>
+      <div class="step-chip ${s.type==='intro'?'blue':'green'}">${s.type==='intro'?'Concetto':'Esempio Pratico'}</div>
+      <div class="step-title">${s.title}</div>
+      ${s.highlight ? `<div class="highlight-box"><div class="hb-label">📌 Da ricordare</div><div class="hb-text">${s.highlight}</div></div>` : ''}
+      <div class="step-body-card"><div class="step-body-text">${s.body}</div></div>
+    </div>`;
+}
+
+function renderQuiz(s) {
+  const letters = ['A','B','C','D'];
+  const opts = s.options.map((o,i) => `
+    <button class="opt" id="opt${i}" onclick="pickOpt(${i})">
+      <div class="opt-letter">${letters[i]}</div>
+      <span>${o.replace(/^[A-D]\)\s*/,'')}</span>
+    </button>`).join('');
+
+  document.getElementById('stepWrap').innerHTML = `
+    <div>
+      <div class="quiz-instruct">Scegli la risposta corretta</div>
+      <div class="quiz-q">${s.question}</div>
+      <div class="opts">${opts}</div>
+      <div class="feedback" id="fb"></div>
+    </div>`;
+}
+
+function pickOpt(idx) {
+  if (L.answered) return;
+  L.sel = idx;
+  document.querySelectorAll('.opt').forEach((o,i) => o.classList.toggle('selected', i===idx));
+  setBtn('blue','Controlla ✓');
+}
+
+function checkAnswer() {
+  if (L.answered || L.sel === null) return;
+  L.answered = true;
+  if (!L.answers) L.answers = [];
+
+  const s = L.steps[L.cur];
+  const ok = L.sel === s.correct;
+
+  // traccia risposta per storico
+  L.answers.push({ stepIdx: L.cur, chosen: L.sel, correct: s.correct });
+
+  document.querySelectorAll('.opt').forEach((o,i) => {
+    o.disabled = true;
+    if (i === s.correct) o.classList.add('correct');
+    else if (i === L.sel && !ok) o.classList.add('wrong');
+  });
+
+  const fb = document.getElementById('fb');
+  fb.className = 'feedback show ' + (ok ? 'correct' : 'wrong');
+  fb.innerHTML = `<div class="fb-title ${ok?'correct':'wrong'}">${ok ? '✓ Corretto!' : '✗ Non esatto'}</div><div class="fb-exp">${s.explanation}</div>`;
+
+  if (ok) {
+    L.correct++; L.xp += 5;
+    document.getElementById('lXP').textContent = L.xp;
+    document.getElementById('lpFill').style.width = ((L.cur+0.5)/L.steps.length*100) + '%';
+    showXP('+5 XP');
+  } else {
+    save();
+  }
+  setBtn('green','Continua →');
+}
+
+function renderComplete() {
+  document.getElementById('lpFill').style.width = '100%';
+  const acc = L.total > 0 ? Math.round(L.correct/L.total*100) : 100;
+  const bonus = acc === 100 ? 10 : 5;
+  const totalXP = L.xp + bonus;
+
+  // update state
+  S.xp += totalXP;
+  if (!isDoneToday()) {
+    S.streak = S.streak + 1;
+    S.lastDoneDate = today();
+    S.completedDates.push(today());
+  }
+  S.completedConcepts.push({ materiaId: S.dailyConcept?.materiaId, date: today() });
+
+  // increment materia XP
+  const mid = S.dailyConcept?.materiaId;
+  if (mid) S.materiaXP[mid] = (S.materiaXP[mid] || 0) + 1;
+
+  // ── save lesson to history ──
+  if (!S.lessonHistory) S.lessonHistory = [];
+  S.lessonHistory.unshift({
+    date: today(),
+    concept: L.data?.concept || '',
+    materia: L.data?.materia || '',
+    provaId: S.dailyConcept?.provaId || 'p1',
+    steps: L.steps,
+    answers: L.answers || [],
+    xp: totalXP,
+    accuracy: acc
+  });
+  // keep max 60 lezioni in storia
+  if (S.lessonHistory.length > 60) S.lessonHistory = S.lessonHistory.slice(0, 60);
+
+  save();
+
+  document.getElementById('stepWrap').innerHTML = `
+    <div class="complete-wrap">
+      <div class="complete-anim">🎉</div>
+      <div class="complete-title">Lezione completata!</div>
+      <div class="complete-sub">"${L.data?.concept || 'Concetto del giorno'}"</div>
+      <div class="complete-stats">
+        <div class="cs-box xp"><div class="cs-val">+${totalXP}</div><div class="cs-lbl">XP</div></div>
+        <div class="cs-box streak"><div class="cs-val">${S.streak}</div><div class="cs-lbl">Giorni 🔥</div></div>
+        <div class="cs-box acc"><div class="cs-val">${acc}%</div><div class="cs-lbl">Precisione</div></div>
+      </div>
+    </div>`;
+
+  setBtn('green','🏠 Torna alla home');
+  document.getElementById('floatBtn').onclick = () => {
+    goScreen('home'); renderHome(); renderProgress(); renderHistory();
+  };
+}
+
+// ══ HISTORY ═══════════════════════════════════════════
+function renderHistory() {
+  const list = document.getElementById('historyList');
+  if (!list) return;
+  const history = S.lessonHistory || [];
+
+  if (history.length === 0) {
+    list.innerHTML = `<div style="text-align:center;padding:48px 20px;color:var(--text-3)">
+      <div style="font-size:2.5rem;margin-bottom:12px">📭</div>
+      <div style="font-size:0.9rem;font-weight:700">Nessuna lezione completata ancora.<br>Inizia la prima lezione!</div>
+    </div>`;
+    return;
+  }
+
+  const PROVA_ICONS = { p1:'📊', p2:'⚖️', p3:'✏️', po:'🎤' };
+  const dateLabels = {};
+  
+  list.innerHTML = history.map((h, i) => {
+    let dateHeader = '';
+    const label = h.date === today() ? 'Oggi' :
+      h.date === new Date(Date.now()-86400000).toISOString().slice(0,10) ? 'Ieri' :
+      new Date(h.date).toLocaleDateString('it-IT', {day:'numeric', month:'long'});
+    
+    if (!dateLabels[h.date]) {
+      dateLabels[h.date] = true;
+      dateHeader = `<div class="section-label" style="margin-top:${i===0?'0':'16px'}">${label}</div>`;
+    }
+
+    const badgeCls = h.accuracy >= 80 ? 'ok' : 'partial';
+    const badgeTxt = h.accuracy >= 80 ? `✓ ${h.accuracy}%` : `${h.accuracy}%`;
+
+    return `${dateHeader}
+    <div class="hist-card" onclick="openReview(${i})">
+      <div class="hist-top">
+        <div class="hist-icon">${PROVA_ICONS[h.provaId] || '📖'}</div>
+        <div class="hist-info">
+          <div class="hist-concept">${h.concept}</div>
+          <div class="hist-meta">${h.materia} · +${h.xp} XP</div>
+        </div>
+        <span class="hist-badge ${badgeCls}">${badgeTxt}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openReview(idx) {
+  const h = (S.lessonHistory || [])[idx];
+  if (!h) return;
+
+  document.getElementById('reviewTitle').textContent = h.concept;
+  document.getElementById('reviewSub').textContent = `${h.materia} · ${h.date === today() ? 'Oggi' : new Date(h.date).toLocaleDateString('it-IT', {day:'numeric',month:'long',year:'numeric'})} · ${h.accuracy}% corretto`;
+
+  const letters = ['A','B','C','D'];
+  const content = h.steps.map((s, si) => {
+    if (s.type === 'intro' || s.type === 'esempio') {
+      return `<div class="review-step">
+        <div class="review-step-label">${s.type === 'intro' ? '📖 Concetto' : '💡 Esempio'}</div>
+        <div class="review-step-title">${s.title}</div>
+        ${s.highlight ? `<div style="background:rgba(56,189,248,0.07);border:1px solid rgba(56,189,248,0.2);border-radius:8px;padding:10px 12px;margin-bottom:10px;font-size:0.82rem;color:var(--text-2)">${s.highlight}</div>` : ''}
+        <div class="review-step-body">${s.body}</div>
+      </div>`;
+    } else {
+      const ans = (h.answers || []).find(a => a.stepIdx === si);
+      const opts = (s.options || []).map((o, oi) => {
+        let cls = 'neutral';
+        if (oi === s.correct) cls = 'correct';
+        else if (ans && oi === ans.chosen && oi !== s.correct) cls = 'wrong';
+        const marker = oi === s.correct ? '✓' : (ans && oi === ans.chosen ? '✗' : letters[oi]);
+        return `<div class="review-opt ${cls}"><strong>${marker}</strong> ${o.replace(/^[A-D]\)\s*/,'')}</div>`;
+      }).join('');
+      return `<div class="review-step">
+        <div class="review-step-label">❓ Quiz</div>
+        <div class="review-q">${s.question}</div>
+        ${opts}
+        <div class="review-exp">${s.explanation}</div>
+      </div>`;
+    }
+  }).join('');
+
+  document.getElementById('reviewContent').innerHTML = content;
+  document.getElementById('reviewModal').classList.add('show');
+}
+
+function closeReview(e) {
+  if (e.target === document.getElementById('reviewModal')) {
+    document.getElementById('reviewModal').classList.remove('show');
+  }
+}
+
+
+function handleBtn() {
+  const s = L.steps?.[L.cur];
+  if (!s) return;
+  if (s.type === 'quiz' && !L.answered) { checkAnswer(); return; }
+  L.cur++;
+  renderStep();
+}
+
+function exitLesson() {
+  if (confirm('Uscire dalla lezione? I progressi di oggi non verranno salvati.')) {
+    goScreen('home'); renderHome();
+  }
+}
+
+// ══ UTILS ════════════════════════════════════════════
+function setBtn(type, label) {
+  const b = document.getElementById('floatBtn');
+  b.textContent = label;
+  b.className = 'float-btn ' + type;
+  b.onclick = type === 'dis' ? null : handleBtn;
+}
+
+function goScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('s-' + id).classList.add('active');
+  document.querySelectorAll('.bnav-item').forEach(b => b.classList.remove('active'));
+  document.getElementById('bn-' + id)?.classList.add('active');
+
+  const inLesson = id === 'lesson';
+  document.getElementById('bottomNav').style.display = inLesson ? 'none' : '';
+  document.getElementById('floatBtnWrap').style.display = inLesson ? '' : 'none';
+  window.scrollTo(0,0);
+}
+
+function showXP(txt) {
+  const el = document.createElement('div');
+  el.className = 'xp-pop'; el.textContent = txt;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 1700);
+}
+
+function showHeart() {
+  const el = document.createElement('div');
+  el.className = 'heart-pop'; el.textContent = '💔';
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 1100);
+}
+
+async function claude(prompt, maxTok = 1000) {
+  const apiKey = getApiKey();
+  const r = await fetch(PROXY, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": apiKey,
+      "anthropic-version": "2023-06-01"
+    },
+    body: JSON.stringify({
+      model: "claude-sonnet-5-5",
+      max_tokens: maxTok,
+      messages: [{ role:"user", content: prompt }]
+    })
+  });
+  if (!r.ok) {
+    const err = await r.json().catch(() => ({}));
+    throw new Error(err.error?.message || 'API error ' + r.status);
+  }
+  const d = await r.json();
+  return d.content[0].text;
+}
+
+// ── API KEY FLOW ──────────────────────────────────────
+async function submitKey() {
+  const val = document.getElementById('apikeyInput').value.trim();
+  const errEl = document.getElementById('apikeyError');
+  const btn   = document.getElementById('apikeyBtn');
+  errEl.classList.remove('show');
+
+  if (!val.startsWith('sk-ant-')) {
+    errEl.textContent = '⚠ La chiave deve iniziare con "sk-ant-"';
+    errEl.classList.add('show'); return;
+  }
+
+  btn.textContent = 'Verifica in corso…';
+  btn.disabled = true;
+
+  try {
+    // quick validation call
+    const r = await fetch(PROXY, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": val,
+        "anthropic-version": "2023-06-01"
+      },
+      body: JSON.stringify({
+        model: "claude-sonnet-5-5",
+        max_tokens: 10,
+        messages: [{ role:"user", content: "ok" }]
+      })
+    });
+    if (!r.ok) throw new Error();
+    localStorage.setItem('lex_apikey', val);
+    document.getElementById('apikeyScreen').classList.remove('show');
+    init();
+  } catch(e) {
+    errEl.textContent = '⚠ Chiave non valida o errore di rete. Riprova.';
+    errEl.classList.add('show');
+  }
+
+  btn.textContent = 'Accedi →';
+  btn.disabled = false;
+}
+
+// ── API KEY FLOW (legacy — non usata) ────────────────
+function submitKey() {}
+function changeKey() {}
+
+// ══ BOOTSTRAP ════════════════════════════════════════
+const PROXY = "https://lexstudy-proxy.gerryx96.workers.dev";
+
+document.getElementById('floatBtnWrap').style.display = 'none';
+
+(async () => {
+  const savedUser = localStorage.getItem('lex_current_user');
+  if (savedUser) {
+    // prova prima cache locale (istantaneo)
+    const local = loadLocalUser(savedUser);
+    if (local) {
+      loginSuccess(savedUser, local);
+      // poi aggiorna da Supabase in background
+      try {
+        const remote = await sbGetUser(savedUser);
+        if (remote) {
+          saveLocalUser(savedUser, remote);
+          S = remote.data || emptyUserData();
+          renderHome(); renderProgress(); renderHistory();
+        }
+      } catch(e) {}
+      return;
+    }
+    // nessuna cache locale, prova Supabase
+    try {
+      const remote = await sbGetUser(savedUser);
+      if (remote) { saveLocalUser(savedUser, remote); loginSuccess(savedUser, remote); return; }
+    } catch(e) {}
+  }
+  document.getElementById('loginScreen').classList.add('show');
+})();
+
+
+
+// ══ SERVICE WORKER ════════════════════════════════════
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js')
+      .then(() => console.log('SW registered'))
+      .catch(e => console.log('SW error:', e));
+  });
+}
+
+// ══ INSTALL PROMPT ════════════════════════════════════
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  // mostra banner installa dopo 30s se non ancora installata
+  setTimeout(() => {
+    if (deferredPrompt) showInstallBanner();
+  }, 30000);
+});
+
+function showInstallBanner() {
+  const banner = document.createElement('div');
+  banner.id = 'install-banner';
+  banner.style.cssText = `
+    position:fixed; bottom:80px; left:16px; right:16px; z-index:500;
+    background:#1e293b; border:1px solid rgba(56,189,248,0.3);
+    border-radius:14px; padding:14px 16px;
+    display:flex; align-items:center; gap:12px;
+    font-family:'Nunito',sans-serif; animation: fadeUp 0.3s ease;
+  `;
+  banner.innerHTML = `
+    <span style="font-size:1.5rem">📲</span>
+    <div style="flex:1">
+      <div style="font-weight:800;font-size:0.88rem;color:#f1f5f9">Installa LexStudy</div>
+      <div style="font-size:0.75rem;color:#94a3b8">Aggiungila alla home screen</div>
+    </div>
+    <button onclick="installApp()" style="background:#0284c7;color:white;border:none;padding:8px 14px;border-radius:8px;font-family:'Nunito',sans-serif;font-weight:800;font-size:0.8rem;cursor:pointer">Installa</button>
+    <button onclick="this.parentElement.remove()" style="background:none;border:none;color:#64748b;font-size:1.2rem;cursor:pointer;padding:4px">×</button>
+  `;
+  document.body.appendChild(banner);
+}
+
+async function installApp() {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  deferredPrompt = null;
+  document.getElementById('install-banner')?.remove();
+}
+</script>
+</body>
+</html>
