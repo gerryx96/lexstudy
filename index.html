@@ -1021,7 +1021,13 @@ La lezione ha ESATTAMENTE 4 step:
 3. QUIZ - domanda a risposta multipla base (4 opzioni, una corretta)
 4. QUIZ - domanda avanzata come quelle delle tracce d'esame reali (4 opzioni, una corretta)
 
-Rispondi SOLO con JSON valido, nessun testo extra:
+REGOLE DI FORMATO (obbligatorie):
+- Rispondi SOLO con un oggetto JSON valido, senza testo prima o dopo e senza blocchi di codice.
+- Dentro i testi NON usare virgolette doppie: usa le virgolette basse «così» oppure apici singoli.
+- Non andare a capo dentro un testo: scrivi ogni valore su una sola riga.
+- Il campo "correct" è l'indice (0-3) dell'opzione giusta.
+
+Struttura:
 {
   "concept": "${dc.concept}",
   "materia": "${dc.materia}",
@@ -1033,18 +1039,75 @@ Rispondi SOLO con JSON valido, nessun testo extra:
   ]
 }`;
 
-  try {
-    const raw = await claude(prompt, 3000);
-    const a = raw.indexOf('{'), b = raw.lastIndexOf('}');
-    if (a === -1 || b === -1) throw new Error('Formato lezione non valido');
-    const data = JSON.parse(raw.slice(a, b + 1));
-    L.steps = data.steps;
-    L.data = data;
-    renderStep();
-  } catch(e) {
-    document.getElementById('stepWrap').innerHTML =
-      `<div class="loading-state">⚠️ Errore nella generazione della lezione.<br><span style="font-size:0.75rem;word-break:break-word">${(e && e.message) ? String(e.message).slice(0,220) : ''}</span><br><br><button onclick="generateLesson()" style="background:var(--blue-d);color:white;border:none;padding:10px 20px;border-radius:10px;font:800 0.9rem 'Nunito',sans-serif;cursor:pointer">Riprova</button></div>`;
+  let lastErr = null;
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      const raw = await claude(prompt, 3000);
+      const data = parseLessonJSON(raw);
+      validateLesson(data);
+      L.steps = data.steps;
+      L.data = data;
+      renderStep();
+      return;
+    } catch(e) {
+      lastErr = e;
+      console.warn('Lezione tentativo ' + attempt + ' fallito:', e.message);
+    }
   }
+  document.getElementById('stepWrap').innerHTML =
+    `<div class="loading-state">⚠️ Errore nella generazione della lezione.<br><span style="font-size:0.75rem;word-break:break-word">${(lastErr && lastErr.message) ? String(lastErr.message).slice(0,220) : ''}</span><br><br><button onclick="generateLesson()" style="background:var(--blue-d);color:white;border:none;padding:10px 20px;border-radius:10px;font:800 0.9rem 'Nunito',sans-serif;cursor:pointer">Riprova</button></div>`;
+}
+
+// Estrae e ripara il JSON restituito dal modello
+function parseLessonJSON(raw) {
+  const a = raw.indexOf('{'), b = raw.lastIndexOf('}');
+  if (a === -1 || b === -1) throw new Error('Formato lezione non valido');
+  const txt = raw.slice(a, b + 1);
+  try { return JSON.parse(txt); } catch(_) {}
+  return JSON.parse(repairJSON(txt));
+}
+
+// Ripara: a capo non escapati dentro le stringhe e virgolette interne non escapate
+function repairJSON(txt) {
+  let out = '', inStr = false, esc = false;
+  for (let i = 0; i < txt.length; i++) {
+    const c = txt[i];
+    if (!inStr) {
+      out += c;
+      if (c === '"') inStr = true;
+      continue;
+    }
+    if (esc) { out += c; esc = false; continue; }
+    if (c === '\\') { out += c; esc = true; continue; }
+    if (c === '\n' || c === '\r') { out += '\\n'; if (c === '\r' && txt[i+1] === '\n') i++; continue; }
+    if (c === '\t') { out += ' '; continue; }
+    if (c === '"') {
+      // virgoletta di chiusura solo se seguita da , : } ]
+      let j = i + 1;
+      while (j < txt.length && /\s/.test(txt[j])) j++;
+      const nx = txt[j];
+      if (nx === ',' || nx === ':' || nx === '}' || nx === ']' || nx === undefined) {
+        out += c; inStr = false;
+      } else {
+        out += '\\"'; // virgoletta interna
+      }
+      continue;
+    }
+    out += c;
+  }
+  return out;
+}
+
+function validateLesson(d) {
+  if (!d || !Array.isArray(d.steps) || d.steps.length < 3) throw new Error('Lezione incompleta');
+  d.steps.forEach(st => {
+    if (st.type === 'quiz') {
+      if (!Array.isArray(st.options) || st.options.length < 2 || typeof st.correct !== 'number')
+        throw new Error('Quiz non valido');
+    } else if (!st.body) {
+      throw new Error('Step senza testo');
+    }
+  });
 }
 
 function renderStep() {
